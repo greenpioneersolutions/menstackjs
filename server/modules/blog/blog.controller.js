@@ -4,16 +4,32 @@ var blogs = mongoose.model('blog')
 var _ = require('lodash')
 
 exports.getBlog = function (req, res, next) {
+  // console.log(req.queryParameters, 'queryParameters')
   auto({
     blogs: function (cb) {
       blogs
-        .find()
-        .populate('user')
+        .find(req.queryParameters.filter || '')
+        .where(req.queryParameters.where || '')
+        .sort(req.queryParameters.sort || '')
+        .select(req.queryParameters.select || '')
+        .limit(req.queryParameters.limit || '')
+        .skip(req.queryParameters.skip || '')
+        .populate(req.queryParameters.populateId || '', req.queryParameters.populateItems || '')
+        // If you do not wish for all the nice query parameters then you can revert to below - NPM BUILDREQ
+        // .find()
         .exec(cb)
     },
     count: function (cb) {
       blogs
-        .find()
+        .find(req.queryParameters.filter || '')
+        .where(req.queryParameters.where || '')
+        .sort(req.queryParameters.sort || '')
+        .select(req.queryParameters.select || '')
+        .limit(req.queryParameters.limit || '')
+        .skip(req.queryParameters.skip || '')
+        .populate(req.queryParameters.populateId || '', req.queryParameters.populateItems || '')
+        // If you do not wish for all the nice query parameters then you can revert to below - NPM BUILDREQ
+        // .find()
         .count()
         .exec(cb)
     }
