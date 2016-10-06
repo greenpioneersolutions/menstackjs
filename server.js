@@ -140,6 +140,28 @@ Men.prototype.setupServerModels = function () {
 }
 Men.prototype.setupServerRoutes = function () {
   var self = this
+  // BUILDREQ - Query Parser , Route Builder & Response Builder
+  self.build = require('buildreq')(self.settings.buildreq)
+  // self.app.use(self.build.queryMiddleware())
+  self.app.use(self.build.queryMiddleware({mongoose: mongoose}))
+  // Dynamic Routes / Manually enabling them . You can change it back to automatic in the settings
+  // build.routing(app, mongoose) - if reverting back to automatic
+
+  // self.app.use(self.build.responseMiddleware({mongoose: mongoose}))
+  // self.build.routing({
+  //   mongoose: mongoose,
+  //   remove: ['users'],
+  //   middleware: {
+  //     auth: [self.middleware.verify, self.middleware.isAuthenticated]
+  //   }
+  // }, function (error, data) {
+  //   if (error) console.log(error)
+  //   _.forEach(data, function (m) {
+  //     debug('Route Built by NPM buildreq:', m.route)
+  //     self.app.use(m.route, m.app)
+  //   })
+  // })
+
   require('./server/modules/users/users.routes.js')(self.app, self.middleware, self.mail, self.settings)
   require('./server/modules/blog/blog.routes.js')(self.app, self.middleware, self.mail, self.settings)
 }

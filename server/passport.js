@@ -3,9 +3,7 @@ var mongoose = require('mongoose')
 
 // Passport serialize user function.
 exports.serializeUser = function (user, done) {
-  process.nextTick(function () {
-    done(null, user.id)
-  })
+  done(null, user.id)
 }
 
 // Passport deserialize user function.
