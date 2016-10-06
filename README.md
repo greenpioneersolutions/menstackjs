@@ -9,7 +9,7 @@
 [![Get help on Codementor](https://cdn.codementor.io/badges/get_help_github.svg)](https://www.codementor.io/jasonhumphrey?utm_source=github&utm_medium=button&utm_term=jasonhumphrey&utm_campaign=github)
 [![Donatee](https://img.shields.io/badge/paypal-donate-blue.svg)](https://paypal.me/greenpioneer)
 
-# logo to come soon
+# Men Stack JS (Mongo, Express & Node JS)
 
 
 #[Check Documentation Here](https://github.com/greenpioneersolutions/meanstackjs/wiki)
@@ -27,8 +27,10 @@ Note all documentation of the backend lives in the MeanStackJS repo
 
 For the full version, start here instead:
 * [MeanStackJS](https://github.com/greenpioneersolutions/meanstackjs)
+
 For the lite version, start here instead:
-* [MeanStackJS](https://github.com/greenpioneersolutions/menstackjs)
+* [MeanStackJS-Lite](https://github.com/greenpioneersolutions/meanstackjs-lite)
+
 
 Start learning with documentation:
 * [Check Documentation Here](https://github.com/greenpioneersolutions/meanstackjs/wiki)
@@ -65,10 +67,6 @@ Prerequisites
   - <img src="https://lh5.googleusercontent.com/-2YS1ceHWyys/AAAAAAAAAAI/AAAAAAAAAAc/0LCb_tsTvmU/s46-c-k/photo.jpg" height="17">&nbsp; [Linux Mongodb](https://docs.mongodb.org/manual/administration/install-on-linux/)
 - <img src="https://nodejs.org/static/apple-touch-icon.png" height="17">&nbsp; [Download](http://nodejs.org) and Install Node.js  - nodeschool has free <a href=" http://nodeschool.io/#workshoppers">node tutorials</a> to get you started.
 
-- <img src="http://bower.io/img/bower-logo.png" height="17">&nbsp; [Install Bower](http://bower.io/)
-```bash
-$ npm install -g bower
-```
 
 **Note:** If you are new to Node or Express, we recommend to watch
 [Node.js and Express 101](https://www.youtube.com/watch?v=BN0JlMZCtNU)
