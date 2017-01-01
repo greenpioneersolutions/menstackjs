@@ -1,0 +1,9 @@
+head
+  title MENSTACKJS Settings
+
+body
+  ul
+    each val,index in settings
+      li= index +':'+ JSON.stringify(val)
+  #footer
+    p Copyright (c) MENSTACKJS

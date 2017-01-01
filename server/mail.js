@@ -1,5 +1,6 @@
 var nodemailer = require('nodemailer')
 var settings = require('../configs/settings.js').get()
+var debug = require('debug')('menstackjs:mail')
 var transporter = nodemailer.createTransport(settings.email.connect)
 
 exports.send = function (message, cb) {
@@ -9,8 +10,10 @@ exports.send = function (message, cb) {
     subject: message.subject,
     text: message.text
   }
+
+  debug('mailOptions', mailOptions)
   transporter.sendMail(mailOptions, function (err) {
-    if (err)console.log('mail error:', err)
+    if (err) debug('mail error:', err)
     cb(err)
   })
 }

@@ -1,14 +1,10 @@
 process.env.NODE_ENV = 'nightwatch'
+var Men = require('../../server.men.js')
+var run = require('../../run.js')
 describe('MENSTACKJS API Testing', function () {
   before(function (done) {
-    this.timeout(10000)
-    var Men = require('../../server.js')
-    var server = new Men({}, function (err) {
-      if (err) {
-        console.error('Error during ' + server.settings.title + ' startup. Abort.')
-        console.error(err)
-        process.exit(1)
-      }
+    this.timeout(20000)
+    run(Men, function () {
       require('../seed.js')(function () {
         done()
       })

@@ -1,10 +1,13 @@
-var environment = 'development'
+var debug = require('debug')('menstackjs:environment')
+var environment = process.env.NODE_ENV || 'development'
 
 exports.get = function (env) {
-  environment = env || process.env.NODE_ENV || environment
+  environment = env || environment
+  debug('get:', environment)
   return environment
 }
 exports.set = function (env) {
-  environment = process.env.NODE_ENV = env
+  environment = env
+  debug('set:', environment)
   return environment
 }

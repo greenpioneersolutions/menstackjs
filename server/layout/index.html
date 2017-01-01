@@ -1,40 +1,26 @@
 <!doctype html>
-<html>
-
-<head>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:fb="http://www.facebook.com/2008/fbml" xmlns:og="http://opengraphprotocol.org/schema/" lang="en">
+<head  prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb#">
     <base href="/">
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <meta name="fragment" content="!">
-    <title><%= html.title %></title>
-    <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
-    <meta name="keywords" content="{{html.keywords}}">
-    <meta name="description" content="{{html.description}}">
-    <link rel="icon" href="images/logo/icon.png" type="image/x-icon">    
+    <title >Men Stack JS</title>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="fragment" content="!"/>
+    <meta http-equiv="Content-type" content="text/html;charset=UTF-8"/>   
 </head>
-
-<body>
-	
+<body>    
     <div>
-    <h1>Men Stack Js</h1>
-    <p> Welcome to the api</p>
+        <h1>Men Stack API Page</h1>
+        <p>Here are just some of the routes in the system to help you get started. </p>
+        <a href="http://localhost:3000/api/">Swagger</a><br>
+        <a href="http://localhost:3000/api/status">System Status</a><br>
+        <a href="http://localhost:3000/api/blog">Blog API</a><br>
+        <a href="http://localhost:3000/api/testing">Testing</a><br>
+        <a href="http://localhost:3000/api/settings">Settings</a><br>
+        
     </div>
-    <script>
-        (function(i, s, o, g, r, a, m) {
-            i['GoogleAnalyticsObject'] = r;
-            i[r] = i[r] || function() {
-                (i[r].q = i[r].q || []).push(arguments)
-            }, i[r].l = 1 * new Date();
-            a = s.createElement(o),
-                m = s.getElementsByTagName(o)[0];
-            a.async = 1;
-            a.src = g;
-            m.parentNode.insertBefore(a, m)
-        })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
-        ga('create', '<%= html.googleAnalytics %>', 'auto');
-        ga('send', 'pageview');
-    </script>
 </body>
-
 </html>
+
+
