@@ -1,5 +1,5 @@
 {
-  "name": "meanstackjs-swagger",
+  "name": "menstackjs-swagger",
   "version": "1.0.0",
   "description": "Used to set up swagger.io to represent the api with a nice ui. http://localhost:3000/api/",
   "main": "index.js",
@@ -15,6 +15,6 @@
   "devDependencies": {},
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/greenpioneersolutions/meanstackjs.git"
+    "url": "git+https://github.com/greenpioneersolutions/menstackjs.git"
   }
 }

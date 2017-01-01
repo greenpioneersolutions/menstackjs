@@ -72,16 +72,16 @@ module.exports = function (self) {
     })
 
     swagger.configureSwaggerPaths('', '/api-docs', '')
-    swagger.configureDeclaration('Meanstackjs', {
-      description: 'Meanstackjs API',
+    swagger.configureDeclaration('Menstackjs', {
+      description: 'Menstackjs API',
       authorizations: [''],
       produces: ['application/json']
     })
     swagger.setApiInfo({
-      title: 'Meanstackjs',
-      description: 'Meanstackjs API',
-      termsOfServiceUrl: 'http://meanstackjs.com',
-      contact: 'info@meanstackjs.com',
+      title: 'Menstackjs',
+      description: 'Menstackjs API',
+      termsOfServiceUrl: 'http://menstackjs.com',
+      contact: 'info@menstackjs.com',
       licenseUrl: 'http://en.wikipedia.org/wiki/MIT_License'
     })
     swagger.setAuthorizations({
