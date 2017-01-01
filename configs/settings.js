@@ -1,9 +1,22 @@
-'use strict'
+require('dotenv').config({silent: true})
 
 var path = require('path')
 var _ = require('lodash')
 var environment = require('./environment.js').get()
 var baseLine = {
+  app: {
+    name: 'MenStackJS'
+  },
+  minify: 'default',
+  render: {
+    cli: 'lodash', // __ or ejs or lodash.
+    lodash: {
+      options: {} // https://lodash.com/docs#template
+    },
+    ejs: {
+      options: {} // https://www.npmjs.com/package/ejs#options
+    }
+  },
   env: environment,
   // Root path of server
   root: path.join(__dirname, '/../../..'),
@@ -28,7 +41,7 @@ var baseLine = {
   },
   // Plato
   plato: {
-    title: 'mean stack',
+    title: 'men stack',
     eslint: {
       lastsemic: true,
       asi: true
@@ -37,13 +50,13 @@ var baseLine = {
   // JWT Object https://github.com/auth0/node-jsonwebtoken
   jwt: {
     // is used to compute a JWT SIGN
-    secret: 'MEANSTACKJS',
+    secret: 'MENSTACKJS',
     options: {
       expiresIn: 60 * 120 // 60 seconds * 120  = 2 hours
     }
   },
   // is used to compute a session hash
-  sessionSecret: 'MEANSTACKJS',
+  sessionSecret: 'MENSTACKJS',
   // The name of the MongoDB collection to store sessions in
   sessionCollection: 'sessions',
   // The session cookie settings
@@ -59,19 +72,7 @@ var baseLine = {
     // at all. The cookie will expunge when the browser is closed.
     maxAge: null
   },
-  maxcdn: {
-    companyAlias: process.env.MAXCDN_COMPANY_ALIAS || '',
-    consumerKey: process.env.MAXCDN_CONSUMER_KEY || '',
-    consumerSecret: process.env.MAXCDN_CONSUMER_SECRET || ''
-  },
-  html: {
-    googleAnalytics: 'UA-71654331-1',
-    keywords: 'MEAN, MEANSTACKJS, mongodb, expressjs, angularjs,nodejs, javascript',
-    description: 'The Meanstack js is a opensource framework that is made for and by developers'
-  },
-  // The session cookie name
-  sessionName: 'connect.meanstackjs',
-  title: 'MEANSTACKJS',
+  sessionName: 'session.id',
   bodyparser: {
     json: {limit: '100kb'},
     urlencoded: {limit: '100kb', extended: true}
@@ -182,24 +183,24 @@ var baseLine = {
   email: {
     templates: {
       welcome: {
-        subject: 'Welcome to Mean Stack JS',
+        subject: 'Welcome to Men Stack JS',
         text: function (username) {
           return 'Hi ' + username + ',\n\n' +
-          'Thanks for signing up for Mean Stack JS.\n\n' +
+          'Thanks for signing up for Men Stack JS.\n\n' +
           'If you have any questions about the site, you can reply to this ' +
           'email.\n\n' +
-          '— Mean Stack JS'
+          '— Men Stack JS'
         }
       },
       reset: {
-        subject: 'Reset your password on MEANSTACKJS ',
+        subject: 'Reset your password on MENSTACKJS ',
         text: function (email) {
           return 'Hello,\n\n' +
           'This is a confirmation that the password for your account ' + email + ' has just been changed.\n'
         }
       },
       forgot: {
-        subject: 'Welcome to Mean Stack JS',
+        subject: 'Welcome to Men Stack JS',
         text: function (host, token) {
           return 'You are receiving this email because you (or someone else) have requested the reset of the password for your account.\n\n' +
           'Please click on the following link, or paste this into your browser to complete the process:\n\n' +
@@ -208,14 +209,14 @@ var baseLine = {
         }
       }
     },
-    from: 'MEANSTACKJS@localhost.com',
-    error: 'MEANSTACKJS@localhost.com',
+    from: 'MENSTACKJS@localhost.com',
+    error: 'MENSTACKJS@localhost.com',
     connect: {
       host: 'smtp.mandrillapp.com', // Gmail, SMTP
       port: '587',
       auth: {
-        user: '',
-        pass: ''
+        user: 'hackathonstarterdemo',
+        pass: 'E1K950_ydLR4mHw12a0ldA'
       }
     }
   }

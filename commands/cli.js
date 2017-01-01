@@ -2,92 +2,69 @@
 
 'use strict'
 var inquirer = require('inquirer')
-var chalk = require('chalk')
+var chalksay = require('chalksay')
 var _ = require('lodash')
 var mongoose = require('mongoose')
-var bcrypt = require('bcrypt-nodejs')
 var questions = require('./questions.js')
 var settings = require('../configs/settings.js').get()
 var fs = require('fs')
 var path = require('path')
 var shell = require('shelljs')
 var multiline = require('multiline')
+var ejs = require('ejs')
+var pathExists = require('is-there')
+
+if (settings.env === 'production') {
+  chalksay.red('Warning you are in ')
+  chalksay.red(settings.env)
+  chalksay.red('We highly suggest against doing this')
+}
+
 mongoose.connect(settings.mongodb.uri, settings.mongodb.options)
 mongoose.connection.on('error', function () {
   console.log('MongoDB Connection Error. Please make sure that MongoDB is running.')
   process.exit(1)
 })
 mongoose.Promise = Promise
-var userSchema = new mongoose.Schema({
-  email: {
-    type: String,
-    unique: true,
-    lowercase: true
-  },
-  password: {
-    type: String
-  },
-  tokens: {
-    type: Array
-  },
-  roles: {
-    type: Array,
-    default: []
-  },
-  profile: {
-    name: {
-      type: String,
-      default: ''
-    },
-    gender: {
-      type: String,
-      default: ''
-    },
-    location: {
-      type: String,
-      default: ''
-    },
-    website: {
-      type: String,
-      default: ''
-    },
-    picture: {
-      type: String,
-      default: ''
-    }
-  },
-  resetPasswordToken: {
-    type: String
-  },
-  resetPasswordExpires: {
-    type: Date
-  }
-})
-// Password hash middleware.
-userSchema.pre('save', function (next) {
-  var user = this
-  if (!user.isModified('password')) {
-    return next()
-  }
-  bcrypt.genSalt(10, function (err, salt) {
-    if (err) {
-      return next(err)
-    }
-    bcrypt.hash(user.password, salt, null, function (err, hash) {
-      if (err) {
-        return next(err)
-      }
-      user.password = hash
-      next()
-    })
-  })
-})
-var User = mongoose.model('User', userSchema)
+var User = mongoose.model('users', require('../server/modules/users/users.model.js'))
+var commandFiles = {}
+commandFiles.template = _.union(
+  [new inquirer.Separator('Client Creation:')],
+  _.map(fs.readdirSync('./commands/template/client'), function (n) { return 'client/' + n }),
+  [new inquirer.Separator('Server Creation:')],
+  _.map(fs.readdirSync('./commands/template/server'), function (n) { return 'server/' + n })
+  )
 
+commandFiles.blank = _.union(
+  [new inquirer.Separator('Client Creation:')],
+  _.map(fs.readdirSync('./commands/blank/client'), function (n) { return 'client/' + n }),
+  [new inquirer.Separator('Server Creation:')],
+  _.map(fs.readdirSync('./commands/blank/server'), function (n) { return 'server/' + n })
+  )
+
+commandFiles.modules = _.union(
+  [new inquirer.Separator('Client Deletion:')],
+  _.map(_.remove(fs.readdirSync('./client/modules'), function (n) { return n !== 'client.module.js' }), function (n) { return 'client/modules/' + n }),
+  [new inquirer.Separator('Server Deletion:')],
+  _.map(fs.readdirSync('./server/modules'), function (n) { return 'server/modules/' + n })
+  )
+function rmdirSync (url) {
+  if (pathExists(url)) {
+    fs.readdirSync(url).forEach(function (file, index) {
+      var curPath = path.resolve(url + '/' + file)
+      if (fs.lstatSync(curPath).isDirectory()) {
+          //
+      } else { // delete file
+        fs.unlinkSync(curPath)
+      }
+    })
+    fs.rmdirSync(url)
+  }
+}
 function emptyDirectory (url, callback) {
   fs.readdir('./' + url, function (err, files) {
-    if (err && err.code !== 'ENOENT') throw new Error(err)
-    callback(!files || !files.length)
+    if (err && err.code !== 'ENOENT') throw new Error(err, 'THIS ERR')
+    callback(files === undefined)
   })
 }
 function readDirectory (url, callback) {
@@ -96,47 +73,61 @@ function readDirectory (url, callback) {
     callback(files)
   })
 }
+function ensureMade (url, callback) {
+  emptyDirectory(url, function (empty) {
+    if (empty) {
+      mkdir(url, function () {
+        return callback()
+      })
+    } else {
+      callback()
+    }
+  })
+}
 function ensureEmpty (url, force, callback) {
   emptyDirectory(url, function (empty) {
     if (empty || force) {
       callback()
     } else {
-      console.log(chalk.red('Destination is not empty:'), url)
+      chalksay.red('Destination is not empty:', url)
       ask()
     }
   })
 }
 function write (url, str) {
   fs.writeFile(url, str)
-  console.log(chalk.cyan('   Created File:'), url)
+  chalksay.cyan('   Created File:', url)
+}
+function renderTemplate (template, data) {
+  if (settings.render.cli.toLowerCase() === 'lodash') {
+    var compiled = _.template(template, settings.render.lodash.options)
+    template = compiled(data)
+  } else if (settings.render.cli.toLowerCase() === 'ejs') {
+    template = ejs.render(template, data, settings.render.ejs.options)
+  } else if (settings.render.cli.toLowerCase() === '__') {
+    for (var index in data) {
+      template = template.split('__' + index + '__').join(data[index])
+    }
+  } else {
+    chalksay.red('No Render Options Selected')
+    chalksay.red('please locate configs/settings.js render.cli')
+    chalksay.red('__ / ejs / lodash    are the only three options currently')
+  }
+  return template
 }
 function readTemplate (url, data) {
   var template = fs.readFileSync(path.join(__dirname, '/', url), 'utf8')
-
-  for (var index in data) {
-    template = template.split('__' + index + '__').join(data[index])
-  }
-
-  return template
+  return renderTemplate(template, data)
 }
 function useTemplate (template, data) {
-  for (var index in data) {
-    template = template.split('__' + index + '__').join(data[index])
-  }
-
-  return template
+  return renderTemplate(template, data)
 }
-// function readFile (url) {
-//   var template = fs.readFileSync(path.join(__dirname, '/', url), 'utf8')
-//   return template
-// }
 function mkdir (url, fn) {
   shell.mkdir('-p', url)
   shell.chmod(755, url)
-  console.log(chalk.cyan('   Created Directory:'), url)
+  chalksay.cyan('   Created Directory:', url)
   if (fn) fn()
 }
-
 function buildBack (data, cb) {
   var change = {
     name: data.name,
@@ -145,7 +136,7 @@ function buildBack (data, cb) {
   var pathVar = './server'
   ensureEmpty(pathVar + '/modules/' + data.name + '/', false, function () {
     mkdir(pathVar + '/modules/' + data.name + '/', function () {
-      readDirectory('./commands/template/server/', function (files) {
+      readDirectory('./commands/' + data.location + '/server/', function (files) {
         // FILTER OUT DC STORES ...etc anythin with a .
         files = _.filter(files, function (n) {
           return !_.startsWith(n, '.')
@@ -154,7 +145,7 @@ function buildBack (data, cb) {
           if (n === 'model.js' && data.schema.created) {
             write(pathVar + '/modules/' + data.name + '/' + data.name + '.' + n, useTemplate(data.schema.modelFile, change))
           } else {
-            write(pathVar + '/modules/' + data.name + '/' + data.name + '.' + n, readTemplate('./template/server/' + n, change))
+            write(pathVar + '/modules/' + data.name + '/' + data.name + '.' + n, readTemplate('./' + data.location + '/server/' + n, change))
           }
         })
         cb()
@@ -192,10 +183,7 @@ var __name__Schema = mongoose.Schema({
       })
       modelFile += multiline(function () { /*
 })
-var __Name__ = mongoose.model('__Name__', __name__Schema)
-module.exports = {
-  __Name__: __Name__
-}
+module.exports = __name__Schema
   */
       })
       cb({
@@ -238,10 +226,7 @@ var __name__Schema = mongoose.Schema({
           })
           modelFile += multiline(function () { /*
 })
-var __Name__ = mongoose.model('__Name__', __name__Schema)
-module.exports = {
-  __Name__: __Name__
-}
+module.exports = __name__Schema
   */
           })
           cb({
@@ -296,7 +281,7 @@ function updatePassword (user, cb) {
       }
     }, function (err, data) {
       if (err) {
-        console.log(chalk.red(err))
+        chalksay.red(err)
       }
       cb(err, data)
     })
@@ -314,7 +299,7 @@ function addRoles (user, cb) {
       }
     }, function (err, data) {
       if (err) {
-        console.log(chalk.red(err))
+        chalksay.red(err)
       }
       cb(err, data)
     })
@@ -334,38 +319,158 @@ function removeRoles (user, cb) {
       }
     }, function (err, data) {
       if (err) {
-        console.log(chalk.red(err))
+        chalksay.red(err)
       }
       cb(err, data)
     })
   })
 }
+function logShellJS (code, stdout, stderr) {
+  if (stdout)chalksay.green(stdout)
+  if (stderr)chalksay.red(stderr)
+  ask()
+}
 function ask () {
   inquirer.prompt(questions.intro).then(function (answers) {
     switch (answers.intro) {
-      case 'Create Backend Module':
-        inquirer.prompt(questions.module).then(function (modules) {
-          buildSchema(function (data) {
-            buildBack({
-              name: modules.module,
-              schema: data
-            }, function (err) {
-              if (err)console.log(err)
-              ask()
+      case 'Start Selenium Server':
+        shell.exec('node_modules/.bin/selenium-standalone start', {silent: false}, logShellJS)
+        break
+      case 'Install Selenium Server':
+        shell.exec('node_modules/.bin/selenium-standalone install', {silent: false}, logShellJS)
+        break
+      case 'Start Mongod':
+        shell.exec('bash scripts/start-mongod.sh', {silent: false}, logShellJS)
+        break
+      case 'Install MongoDB':
+        shell.exec('bash scripts/mongodb-install.sh', {silent: false}, logShellJS)
+        break
+      case 'Install NodeJS':
+        shell.exec('bash scripts/nodejs-install.sh', {silent: false}, logShellJS)
+        break
+      case 'Set Proxies':
+        shell.exec('bash scripts/set-proxies.sh', {silent: false}, logShellJS)
+        break
+      case 'Delete Proxies':
+        shell.exec('bash scripts/unset-proxies.sh', {silent: false}, logShellJS)
+        break
+      case 'Linux Processes':
+        shell.exec("ps -ef | grep 'node index.js' | grep -v grep", {silent: false}, logShellJS)
+        break
+      case 'Linux Kill Processes':
+        shell.exec("ps -ef | grep 'node index.js' | grep -v grep | awk '{print $2}' | xargs kill -9", {silent: false}, logShellJS)
+        break
+      case 'Lint Code':
+        shell.exec('node_modules/.bin/standard --fix', {silent: false}, logShellJS)
+        break
+      case 'Lint & Fix Code':
+        shell.exec('node_modules/.bin/standard --fix', {silent: false}, logShellJS)
+        break
+      case 'Install SSL Certs':
+        shell.exec('bash scripts/generate-ssl-certs.sh', {silent: false}, logShellJS)
+        break
+      case 'Men Stack JS Install Dependencies':
+        shell.exec('npm install', {silent: false}, logShellJS)
+        break
+      case 'Men Stack JS Post Install':
+        shell.exec('npm run postinstall', {silent: false}, logShellJS)
+        break
+      case 'Install Tools Dependencies':
+        shell.exec('node scripts/postinstall.js', {silent: false}, logShellJS)
+        break
+      case 'Install Bower Dependencies':
+        shell.exec('node_modules/.bin/bower install', {silent: false}, logShellJS)
+        break
+      case 'Seed Database':
+        require('../tests/seed.js')(function () {
+          chalksay.green('Successfully seeded the database')
+          ask()
+        })
+        break
+      case 'Remove Module':
+        inquirer.prompt({
+          type: 'list',
+          name: 'module',
+          message: 'What Module do you want to delete?',
+          choices: commandFiles.modules
+        }).then(function (data) {
+          fs.readdir('./' + data.module, function (err, files) {
+            if (err && err.code !== 'ENOENT') throw new Error(err)
+            chalksay.cyan(data.module + ' contains:')
+            chalksay.green(files)
+            inquirer.prompt({
+              type: 'confirm',
+              name: 'delete',
+              message: 'Are you sure you want to delete this module?'
+            }).then(function (confirm) {
+              if (confirm.delete) {
+                rmdirSync('./' + data.module)
+                chalksay.green('Deleted: ' + data.module)
+                ask()
+              } else {
+                chalksay.red('Canceled Deletion')
+                ask()
+              }
             })
           })
         })
-
+        break
+      case 'Create A File or Files':
+        inquirer.prompt(questions.location).then(function (location) {
+          inquirer.prompt(questions.module).then(function (modules) {
+            inquirer.prompt({
+              type: 'checkbox',
+              name: 'files',
+              message: 'What files do you want to create?',
+              choices: commandFiles[location.location]
+            }).then(function (files) {
+              var change = {
+                name: modules.module,
+                Name: _.capitalize(modules.module)
+              }
+              _.forEach(files.files, function (n) {
+                ensureMade(n.substring(0, 6) + '/modules/' + modules.module + '/', function () {
+                  if (n.substring(0, 6) === 'client') {
+                    if (path.extname(n) === '.html') {
+                      write('./client' + '/modules/' + modules.module + '/' + n.substring(7), readTemplate('./' + location.location + '/client/' + n.substring(7), change))
+                    } else {
+                      write('./client' + '/modules/' + modules.module + '/' + modules.module + '.' + n.substring(7), readTemplate('./' + location.location + '/client/' + n.substring(7), change))
+                    }
+                  } else {
+                    write('./server' + '/modules/' + modules.module + '/' + modules.module + '.' + n.substring(7), readTemplate('./' + location.location + '/server/' + n.substring(7), change))
+                  }
+                })
+              })
+              setTimeout(function () { ask() }, 500)
+            })
+          })
+        })
+        break
+      case 'Create Backend Module':
+        inquirer.prompt(questions.location).then(function (location) {
+          inquirer.prompt(questions.module).then(function (modules) {
+            buildSchema(function (data) {
+              buildBack({
+                location: location.location,
+                name: modules.module,
+                schema: data
+              }, function (err) {
+                if (err)console.log(err)
+                ask()
+              })
+            })
+          })
+        })
         break
       case 'Create Schema':
         buildSchema(function (data) {
           if (data.created) {
-            console.log(chalk.blue(
+            chalksay.blue(
               useTemplate(data.modelFile, {
                 name: 'example',
                 Name: 'Example'
               })
-            ))
+            )
           }
           ask()
         })
@@ -373,12 +478,12 @@ function ask () {
       // case 'Create User':
       //   findUser(function (err, data) {
       //     if (err) {
-      //       console.log(chalk.red(err))
+      //       chalksay.red(err)
       //     } else {
       //       if (data === null) {
-      //         console.log(chalk.red('No User Found Under That Email'))
+      //         chalksay.red('No User Found Under That Email')
       //       } else {
-      //         console.log(chalk.green(data))
+      //         chalksay.green(data)
       //       }
       //     }
       //   })
@@ -386,23 +491,23 @@ function ask () {
       case 'Change Password':
         findUser(function (err, user) {
           if (err) {
-            console.log('Starting Over - Error:', chalk.red(err))
+            chalksay.red('Starting Over - Error:', err)
             ask()
           } else {
             if (user === null) {
-              console.log(chalk.red('No User Found Under That Email'))
+              console.log(chalksay.red('No User Found Under That Email'))
               ask()
             } else {
               updatePassword(user, function (err, data) {
                 if (err) {
-                  console.log('Starting Over - Error:', chalk.red(err))
+                  chalksay.red('Starting Over - Error:', err)
                   ask()
                 } else {
                   if (data === null) {
-                    console.log(chalk.red('No User Found Under That Email'))
+                    chalksay.red('No User Found Under That Email')
                     ask()
                   } else {
-                    console.log(chalk.green(data))
+                    chalksay.green(data)
                     ask()
                   }
                 }
@@ -415,25 +520,25 @@ function ask () {
       case 'Change User Roles':
         findUser(function (err, user) {
           if (err) {
-            console.log('Starting Over - Error:', chalk.red(err))
+            chalksay.red('Starting Over - Error:', err)
             ask()
           } else {
             if (user === null) {
-              console.log(chalk.red('No User Found Under That Email'))
+              chalksay.red('No User Found Under That Email')
               ask()
             } else {
               inquirer.prompt(questions.roles).then(function (answers) {
                 if (answers.role === 'Add Role') {
                   addRoles(user, function (err, data) {
                     if (err) {
-                      console.log('Starting Over - Error:', chalk.red(err))
+                      chalksay.red('Starting Over - Error:', err)
                       ask()
                     } else {
                       if (data === null) {
-                        console.log(chalk.red('No User Found Under That Email'))
+                        chalksay.red('No User Found Under That Email')
                         ask()
                       } else {
-                        console.log(chalk.green(data))
+                        chalksay.green(data)
                         ask()
                       }
                     }
@@ -441,14 +546,14 @@ function ask () {
                 } else {
                   removeRoles(user, function (err, data) {
                     if (err) {
-                      console.log('Starting Over - Error:', chalk.red(err))
+                      chalksay.red('Starting Over - Error:', err)
                       ask()
                     } else {
                       if (data === null) {
-                        console.log(chalk.red('No User Found Under That Email'))
+                        chalksay.red('No User Found Under That Email')
                         ask()
                       } else {
-                        console.log(chalk.green(data))
+                        chalksay.green(data)
                         ask()
                       }
                     }
@@ -463,14 +568,14 @@ function ask () {
       case 'View User':
         findUser(function (err, user) {
           if (err) {
-            console.log('Starting Over - Error:', chalk.red(err))
+            chalksay.red('Starting Over - Error:', err)
             ask()
           } else {
             if (user === null) {
-              console.log(chalk.red('No User Found Under That Email'))
+              chalksay.red('No User Found Under That Email')
               ask()
             } else {
-              console.log(chalk.green(user))
+              chalksay.green(user)
               ask()
             }
           }
