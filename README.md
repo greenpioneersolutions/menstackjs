@@ -33,8 +33,8 @@ Check out this YouTube channel that has content to help you:
 For more control or something more basic, start here instead:
 * [Lite Version](https://github.com/greenpioneersolutions/meanstackjs-lite)
 
-For the Api version, start here instead:
-* [Men Version](https://github.com/greenpioneersolutions/menstackjs)
+For full version, start here instead:
+* [Full Version](https://github.com/greenpioneersolutions/meanstackjs)
 
 Want more content?
 * [LiveCoding.TV](https://www.livecoding.tv/greenpioneer/)
