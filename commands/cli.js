@@ -29,22 +29,16 @@ mongoose.Promise = Promise
 var User = mongoose.model('users', require('../server/modules/users/users.model.js'))
 var commandFiles = {}
 commandFiles.template = _.union(
-  [new inquirer.Separator('Client Creation:')],
-  _.map(fs.readdirSync('./commands/template/client'), function (n) { return 'client/' + n }),
   [new inquirer.Separator('Server Creation:')],
   _.map(fs.readdirSync('./commands/template/server'), function (n) { return 'server/' + n })
   )
 
 commandFiles.blank = _.union(
-  [new inquirer.Separator('Client Creation:')],
-  _.map(fs.readdirSync('./commands/blank/client'), function (n) { return 'client/' + n }),
   [new inquirer.Separator('Server Creation:')],
   _.map(fs.readdirSync('./commands/blank/server'), function (n) { return 'server/' + n })
   )
 
 commandFiles.modules = _.union(
-  [new inquirer.Separator('Client Deletion:')],
-  _.map(_.remove(fs.readdirSync('./client/modules'), function (n) { return n !== 'client.module.js' }), function (n) { return 'client/modules/' + n }),
   [new inquirer.Separator('Server Deletion:')],
   _.map(fs.readdirSync('./server/modules'), function (n) { return 'server/modules/' + n })
   )
