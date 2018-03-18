@@ -1,11 +1,22 @@
+module.exports = SocketIO
+/**
+ * Men Stack SocketIO Server File
+ * @name SocketIO
+ * @function
+ * @param {Object} opts the options passed to create the server
+ * @param {Function} done the callback function
+ * MIT Licensed
+*/
+
 var express = require('express')
 var debug = require('debug')('menstackjs:socketio')
 var fs = require('fs')
 var settings = require('./configs/settings.js').get()
+var glob = require('glob')
 
 function SocketIO (opts, done) {
   var self = this
-
+  self.logger = require('./server/logger.js').logger
   self.app = express()
   if (settings.https.active) {
     self.socketServer = require('https').createServer({
@@ -19,8 +30,13 @@ function SocketIO (opts, done) {
   self.io = require('socket.io')(self.socketServer)
 
   self.io.on('connection', function (socket) {
-    socket.on('message', function (msg) {
-      self.io.emit('message', msg)
+    var files = glob.sync('server/modules/**/*.socket.js')
+    files.forEach(function (socketFile) {
+      debug('Sockets: %s', socketFile)
+      require('./' + socketFile)(self.io, socket)
+    })
+    socket.on('system', function (msg) {
+      io.emit('system', msg)
     })
   })
 
@@ -28,7 +44,7 @@ function SocketIO (opts, done) {
   self.socketServer.listen(self.app.get('port'))
 
   debug('Socketio listening on port %d', self.app.get('port'))
-  console.log('Socketio listening on port %d', self.app.get('port'))
+  self.logger.info('Socketio listening on port %d', self.app.get('port'))
   done(null)
 }
 
@@ -36,5 +52,3 @@ var run = require('./run.js')
 if (!module.parent) {
   run(SocketIO)
 }
-
-module.exports = SocketIO
