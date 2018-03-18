@@ -1,8 +1,8 @@
 var mongodbUri = process.env.DB_PORT_27017_TCP_ADDR || process.env.MONGODB || process.env.MONGOLAB_URI || 'mongodb://localhost/dev'
 module.exports = {
-  minify: 'default', // 'concat' all files or 'minify' concat and minfy  or 'default' leave as is
+  minify: process.env.MINIFY || 'default', // 'concat' all files or 'minify' concat and minfy  or 'default' leave as is
   html: {
-    title: 'Development MENSTACKJS'
+    title: process.env.HTML_TITLE || 'Development MENSTACKJS'
   },
   logger: 'dev',
   cdn: process.env.CDN || false,
@@ -19,14 +19,15 @@ module.exports = {
     port: process.env.SOCKETIOPORT || 8282
   },
   http: {
-    active: true,
+    active: process.env.HTTP_ACTIVE || true,
     port: process.env.PORT || 3000
   },
   https: {
-    active: false,
+    active: process.env.HTTPS_ACTIVE || false,
+    redirect: true,
     port: process.env.HTTPSPORT || 3043,
-    key: './configs/certificates/keyExample.pem',
-    cert: './configs/certificates/certExample.pem'
+    key: process.env.HTTPS_KEY || './configs/certificates/keyExample.pem',
+    cert: process.env.HTTPS_CERT || './configs/certificates/certExample.pem'
   },
   throttle: {
     rateLimit: {
@@ -43,22 +44,13 @@ module.exports = {
     // Below are some examples.
     // See http://mongodb.github.io/node-mongodb-native/driver-articles/mongoclient.html#mongoclient-connect-options
     // and http://mongoosejs.com/docs/connections.html for more information
-
     options: {
-      // server: {
-      //   socketOptions: {
-      //     keepAlive: 1
-      //   },
-      //   poolSize: 5
-      // },
-      // replset: {
-      //   rs_name: 'myReplicaSet',
-      //   poolSize: 5
-      // },
-      db: {
-        w: 1,
-        numberOfRetries: 2
-      }
+      autoIndex: false, // Don't build indexes
+      reconnectTries: Number.MAX_VALUE, // Never stop trying to reconnect
+      reconnectInterval: 500, // Reconnect every 500ms
+      poolSize: 10, // Maintain up to 10 socket connections
+      // If not connected, return errors immediately rather than waiting for reconnect
+      bufferMaxEntries: 0
     }
   },
   agendash: {

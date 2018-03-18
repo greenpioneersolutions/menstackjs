@@ -1,3 +1,20 @@
+exports.postAuthenticate = postAuthenticate
+exports.getAuthenticate = getAuthenticate
+exports.logout = logout
+exports.postSignup = postSignup
+exports.putUpdateProfile = putUpdateProfile
+exports.putUpdatePassword = putUpdatePassword
+exports.deleteDeleteAccount = deleteDeleteAccount
+exports.getReset = getReset
+exports.postReset = postReset
+exports.postForgot = postForgot
+exports.getKey = getKey
+exports.postKey = postKey
+exports.getKeyReset = getKeyReset
+exports.checkLoginInformation = checkLoginInformation
+exports.createResponseObject = createResponseObject
+exports.postPhoto = postPhoto
+
 var _ = require('lodash')
 var auto = require('run-auto')
 var crypto = require('crypto')
@@ -8,180 +25,45 @@ var fs = require('fs')
 var path = require('path')
 var settings = require('../../../configs/settings.js').get()
 var mail = require('../../mail.js')
-var jwt = require('jsonwebtoken')
 var debug = require('debug')('menstackjs:users')
+var uuid = require('node-uuid')
+var tokenApi = require('./../../token.js')
 
-exports.postAuthenticate = function (req, res, next) {
+function postAuthenticate (req, res, next) {
   debug('start postAuthenticate')
-
   var redirect = req.body.redirect || false
-  req.assert('email', 'Email is not valid').isEmail()
-  req.assert('password', 'Password cannot be blank').notEmpty()
+  var token = tokenApi.createKey(req.user)
+  res.cookie('token', token)
+  debug('end postAuthenticate - Logged In')
+  return res.status(200).send(exports.createResponseObject(req.user, token, redirect))
+}
 
-  var errors = req.validationErrors()
-  if (errors) {
-    debug('end postAuthenticate - Authentication failed. ' + errors[0].msg)
-    return res.status(401).send({
-      success: false,
-      authenticated: false,
-      msg: errors[0].msg,
-      redirect: '/signin'
+function getAuthenticate (req, res) {
+  debug('start getAuthenticate')
+  var redirect = req.body.redirect || false
+  var token = req.headers.authorization || req.query.token || req.body.token || ''// || req.headers['x-access-token']
+  if (req.isAuthenticated()) {
+    return res.status(200).send(exports.createResponseObject(req.user, tokenApi.createKey(req.user), redirect))
+  } else if (token) {
+    tokenApi.checkKey(token, function (error, user) {
+      if (error) return res.status(200).send(exports.createResponseObject(req.user, '', redirect))
+      req.user = user
+      return res.status(200).send(exports.createResponseObject(req.user, token, redirect))
     })
   } else {
-    User.findOne({
-      email: req.body.email
-    }, function (err, user) {
-      if (err) throw err
-      if (!user) {
-        debug('end postAuthenticate - Authentication failed. User not found.')
-        res.send({
-          success: false,
-          authenticated: false,
-          msg: 'Authentication failed. User not found.',
-          redirect: '/signin'
-        })
-      } else {
-        user.comparePassword(req.body.password, function (err, isMatch) {
-          if (isMatch && !err) {
-            req.logIn(user, function (err) {
-              if (err) {
-                return next(err)
-              }
-              delete user['password']
-              var token = jwt.sign({
-                _id: user._id
-              }, settings.jwt.secret, settings.jwt.options) // good for two hours
-              res.cookie('token', token)
-              debug('end postAuthenticate - Logged In')
-
-              res.json({
-                success: true,
-                authenticated: true,
-                user: {
-                  profile: user.profile,
-                  roles: user.roles,
-                  gravatar: user.gravatar,
-                  email: user.email,
-                  _id: user._id
-                },
-                token: 'JWT ' + token,
-                redirect: redirect
-              })
-            })
-          } else {
-            debug('end postAuthenticate - Authentication failed. Wrong password.')
-
-            res.send({
-              success: false,
-              authenticated: false,
-              msg: 'Authentication failed. Wrong password.',
-              redirect: '/signin'
-            })
-          }
-        })
-      }
-    })
+    return res.status(200).send(exports.createResponseObject(req.user, '', redirect))
   }
+  debug('end getAuthenticate')
 }
 
-exports.getAuthenticate = function (req, res) {
-  debug('start getAuthenticate')
-
-  var redirect = req.body.redirect || false
-  if (req.user) {
-    var token = jwt.sign({
-      _id: req.user._id
-    }, settings.jwt.secret, settings.jwt.options)
-    debug('end getAuthenticate')
-    return res.status(200).send({
-      user: {
-        profile: req.user.profile,
-        roles: req.user.roles,
-        gravatar: req.user.gravatar,
-        email: req.user.email,
-        _id: req.user._id
-      },
-      token: token,
-      success: true,
-      authenticated: true,
-      redirect: redirect
-    })
-  } else {
-    debug('end getAuthenticate')
-    return res.status(200).send({
-      user: {},
-      success: false,
-      authenticated: false,
-      redirect: redirect
-    })
-  }
-}
-
-exports.postLogin = function (req, res, next) {
-  debug('start getAuthenticate')
-
-  req.assert('email', 'Email is not valid').isEmail()
-  req.assert('password', 'Password cannot be blank').notEmpty()
-
-  var errors = req.validationErrors()
-  var redirect = req.body.redirect || false
-  if (errors) {
-    debug('end getAuthenticate')
-    return res.status(400).send({
-      success: false,
-      authenticated: false,
-      msg: errors[0].msg,
-      redirect: '/signin'
-    })
-  }
-  passport.authenticate('local', function (err, user, info) {
-    if (err) {
-      return next(err)
-    }
-    if (!user) {
-      debug('end getAuthenticate')
-      return res.status(400).send({
-        success: false,
-        authenticated: false,
-        msg: info.message,
-        redirect: false
-      })
-    }
-    req.logIn(user, function (err) {
-      if (err) {
-        return next(err)
-      }
-      delete user['password']
-      var token = jwt.sign({
-        _id: user._id
-      }, settings.jwt.secret, settings.jwt.options) // good for two hours
-      res.cookie('token', token)
-      debug('end getAuthenticate')
-      res.json({
-        success: true,
-        authenticated: true,
-        user: {
-          profile: user.profile,
-          roles: user.roles,
-          gravatar: user.gravatar,
-          email: user.email,
-          _id: user._id
-        },
-        token: 'JWT ' + token,
-        redirect: redirect
-      })
-    })
-  })(req, res, next)
-}
-
-exports.logout = function (req, res) {
+function logout (req, res) {
   debug('start logout')
   req.logout()
   debug('end logout')
   return res.status(200).send()
 }
 
-exports.postSignup = function (req, res, next) {
+function postSignup (req, res, next) {
   debug('start postSignup')
 
   req.assert('profile', 'Name must not be empty').notEmpty()
@@ -196,7 +78,7 @@ exports.postSignup = function (req, res, next) {
     return res.status(400).send({
       success: false,
       authenticated: false,
-      msg: errors[0].msg,
+      message: errors[0].message,
       redirect: '/signup'
     })
   }
@@ -208,48 +90,34 @@ exports.postSignup = function (req, res, next) {
     }
   })
 
-  User.findOne({ email: req.body.email }, function (err, existingUser) {
-    if (err) {
-      return res.status(400).send(err)
+  User.findOne({ email: req.body.email }, function (error, existingUser) {
+    if (error) {
+      return res.status(400).send(error)
     }
     if (existingUser) {
       debug('end postSignup')
-      return res.status(400).send({ msg: 'Account with that email address already exists.' })
+      return res.status(400).send({ message: 'Account with that email address already exists.' })
     }
-    user.save(function (err) {
-      if (err && err.code === 11000) {
+    user.save(function (error) {
+      if (error && error.code === 11000) {
         debug('end postSignup')
-        return res.status(400).send({ msg: 'Account with that email address already exists.' })
-      } else if (err && err.name === 'ValidationError') {
-        var keys = _.keys(err.errors)
+        return res.status(400).send({ message: 'Account with that email address already exists.' })
+      } else if (error && error.name === 'ValidationError') {
+        var keys = _.keys(error.errors)
         debug('end postSignup')
-        return res.status(400).send({ msg: err.errors[keys[0]].message }) // err.message
-      } else if (err) {
-        next(err)
+        return res.status(400).send({ message: error.errors[keys[0]].message }) // error.message
+      } else if (error) {
+        next(error)
       } else {
-        req.logIn(user, function (err) {
-          if (err) {
-            return next(err)
+        req.logIn(user, function (error) {
+          if (error) {
+            return next(error)
           } else {
             delete user['password']
-            var token = jwt.sign({
-              _id: user._id
-            }, settings.jwt.secret, settings.jwt.options) // good for two hours
+            var token = tokenApi.createKey(user)
             res.cookie('token', token)
             debug('end postSignup')
-            res.json({
-              success: true,
-              authenticated: true,
-              user: {
-                profile: user.profile,
-                roles: user.roles,
-                gravatar: user.gravatar,
-                email: user.email,
-                _id: user._id
-              },
-              token: 'JWT ' + token,
-              redirect: redirect
-            })
+            return res.status(200).send(exports.createResponseObject(user, token, redirect))
           }
         })
       }
@@ -257,35 +125,25 @@ exports.postSignup = function (req, res, next) {
   })
 }
 
-exports.putUpdateProfile = function (req, res, next) {
+function putUpdateProfile (req, res, next) {
   debug('start putUpdateProfile')
-
-  var redirect = req.body.redirect || false
-  User.findById(req.user.id, function (err, user) {
-    if (err) {
-      return next(err)
+  User.findById(req.user.id, function (error, user) {
+    if (error) {
+      return next(error)
     }
-    user = _.merge(user, req.body)
-    // user.email = req.body.email || ''
-    // user.profile.name = req.body.name || ''
-    // user.profile.gender = req.body.gender || ''
-    // user.profile.location = req.body.location || ''
-    // user.profile.website = req.body.website || ''
-    user.save(function (err) {
-      if (err) {
-        return next(err)
+    user = _.assign(user, req.body)
+    user.save(function (error) {
+      if (error) {
+        return next(error)
       }
-      // req.flash('success', { msg: 'Profile information updated.' })
+      req.user = user
       debug('end putUpdateProfile')
-      res.status(200).send({
-        user: user,
-        redirect: redirect
-      })
+      return res.status(200).send()
     })
   })
 }
 
-exports.putUpdatePassword = function (req, res, next) {
+function putUpdatePassword (req, res, next) {
   debug('start putUpdatePassword')
 
   req.assert('password', 'Password must be at least 4 characters long').len(4)
@@ -297,28 +155,28 @@ exports.putUpdatePassword = function (req, res, next) {
     return res.status(200).send(errors)
   }
 
-  User.findById(req.user.id, function (err, user) {
-    if (err) {
-      return next(err)
+  User.findById(req.user.id, function (error, user) {
+    if (error) {
+      return next(error)
     }
     user.password = req.body.password
-    user.save(function (err) {
-      if (err) {
-        return next(err)
+    user.save(function (error) {
+      if (error) {
+        return next(error)
       }
-      req.flash('success', { msg: 'Password has been changed.' })
+
       debug('end putUpdatePassword')
       res.status(200).send()
     })
   })
 }
 
-exports.deleteDeleteAccount = function (req, res, next) {
+function deleteDeleteAccount (req, res, next) {
   debug('start deleteDeleteAccount')
 
-  User.remove({ _id: req.user.id }, function (err) {
-    if (err) {
-      return next(err)
+  User.remove({ _id: req.user.id }, function (error) {
+    if (error) {
+      return next(error)
     }
     req.logout()
     debug('end deleteDeleteAccount')
@@ -326,41 +184,40 @@ exports.deleteDeleteAccount = function (req, res, next) {
   })
 }
 
-exports.getReset = function (req, res) {
+function getReset (req, res) {
   debug('start getReset')
 
   if (req.isAuthenticated()) {
     debug('end getReset')
     return res.status(400).send({
-      msg: 'Already authenticated',
+      message: 'Already authenticated',
       valid: false
     })
   } else {
     User
       .findOne({ resetPasswordToken: req.params.token })
       .where('resetPasswordExpires').gt(Date.now())
-      .exec(function (err, user) {
-        if (err) {
-          return res.status(400).send(err)
+      .exec(function (error, user) {
+        if (error) {
+          return res.status(400).send(error)
         }
         if (!user) {
-          // req.flash('errors', { msg: 'Password reset token is invalid or has expired.' })
           debug('end getReset')
           return res.status(400).send({
-            msg: 'Password reset token is invalid or has expired.',
+            message: 'Password reset token is invalid or has expired.',
             valid: false
           })
         }
         debug('end getReset')
         res.status(200).send({
-          msg: 'token is valid',
+          message: 'token is valid',
           valid: true
         })
       })
   }
 }
 
-exports.postReset = function (req, res, next) {
+function postReset (req, res, next) {
   debug('start postReset')
 
   req.assert('password', 'Password must be at least 4 characters long.').len(4)
@@ -368,31 +225,30 @@ exports.postReset = function (req, res, next) {
   var errors = req.validationErrors()
 
   if (errors) {
-    // req.flash('errors', errors)
     debug('end postReset')
-    return res.status(400).send({msg: errors})
+    return res.status(400).send({message: errors})
   } else {
     auto({
       user: function (callback) {
         User
           .findOne({ resetPasswordToken: req.params.token })
           .where('resetPasswordExpires').gt(Date.now())
-          .exec(function (err, user) {
-            if (err) {
-              return next(err)
+          .exec(function (error, user) {
+            if (error) {
+              return next(error)
             }
             if (!user) {
-              return res.status(400).send({msg: 'no user found to reset password for. please hit reset password to get another token'})
+              return res.status(400).send({message: 'no user found to reset password for. please hit reset password to get another token'})
             }
             user.password = req.body.password
             user.resetPasswordToken = undefined
             user.resetPasswordExpires = undefined
-            user.save(function (err) {
-              if (err) {
-                return next(err)
+            user.save(function (error) {
+              if (error) {
+                return next(error)
               }
-              req.logIn(user, function (err) {
-                callback(err, user)
+              req.logIn(user, function (error) {
+                callback(error, user)
               })
             })
           })
@@ -402,28 +258,23 @@ exports.postReset = function (req, res, next) {
           to: results.user.email,
           subject: settings.email.templates.reset.subject,
           text: settings.email.templates.reset.text(results.user.email)
-        }, function (err) {
-          callback(err, true)
+        }, function (error) {
+          callback(error, true)
         })
       }]
-    }, function (err, user) {
-      if (err) {
-        return next(err)
+    }, function (error, user) {
+      if (error) {
+        return next(error)
       }
       delete user.password
       var redirect = req.body.redirect || '/'
       debug('end postReset')
-      res.status(200).send({
-        success: true,
-        authenticated: true,
-        user: user,
-        redirect: redirect
-      })
+      return res.status(200).send(exports.createResponseObject(user, '', redirect))
     })
   }
 }
 
-exports.postForgot = function (req, res, next) {
+function postForgot (req, res, next) {
   debug('start postForgot')
 
   req.assert('email', 'Please enter a valid email address.').isEmail()
@@ -436,16 +287,16 @@ exports.postForgot = function (req, res, next) {
 
   auto({
     token: function (done) {
-      crypto.randomBytes(16, function (err, buf) {
+      crypto.randomBytes(16, function (error, buf) {
         var token = buf.toString('hex')
-        done(err, token)
+        done(error, token)
       })
     },
     user: ['token', function (results, callback) {
-      User.findOne({ email: req.body.email.toLowerCase() }, function (err, user) {
-        if (err) {
+      User.findOne({ email: req.body.email.toLowerCase() }, function (error, user) {
+        if (error) {
           debug('end postForgot')
-          return res.status(400).send(err)
+          return res.status(400).send(error)
         }
         if (!user) {
           debug('end postForgot')
@@ -453,8 +304,8 @@ exports.postForgot = function (req, res, next) {
         }
         user.resetPasswordToken = results.token
         user.resetPasswordExpires = Date.now() + 3600000 // 1 hour
-        user.save(function (err) {
-          callback(err, user)
+        user.save(function (error) {
+          callback(error, user)
         })
       })
     }],
@@ -463,34 +314,112 @@ exports.postForgot = function (req, res, next) {
         to: results.user.email,
         subject: settings.email.templates.forgot.subject,
         text: settings.email.templates.forgot.text(req.headers.host, results.token)
-      }, function (err) {
-        callback(err, true)
+      }, function (error) {
+        callback(error, true)
       })
     }]
-  }, function (err) {
-    if (err) {
-      return next(err)
+  }, function (error) {
+    if (error) {
+      return next(error)
     }
     debug('end postForgot')
-    res.status(200).send({ msg: 'Email has been sent' })
+    return res.status(200).send({ message: 'Email has been sent' })
   })
 }
 
-exports.postPhoto = function (req, res, next) {
+function getKey (req, res, next) {
+  debug('start getKey')
+  return res.json({token: tokenApi.createKey(req.user)})
+}
+
+function postKey (req, res, next) {
+  debug('start postKey')
+  var token = tokenApi.createKey(req.user)
+  res.cookie('token', token)
+  debug('start postKey')
+  return res.json({token: token})
+}
+
+function getKeyReset (req, res, next) {
+  debug('start getKeyReset')
+  req.user.apikey = uuid.v4()
+  req.user.save(function (error) {
+    debug('start getKeyReset')
+    if (error) return res.status(500).send(error)
+    return res.json({token: tokenApi.createKey(req.user)})
+  })
+}
+
+function checkLoginInformation (req, res, next) {
+  debug('start checkLoginInformation')
+  var redirect = req.body.redirect || false
+  req.assert('email', 'Email is not valid').isEmail()
+  req.assert('password', 'Password cannot be blank').notEmpty()
+  req.sanitize('email').normalizeEmail({ remove_dots: false })
+
+  var errors = req.validationErrors()
+  if (errors) {
+    debug('end checkLoginInformation - Authentication failed. ' + errors[0].message)
+    return res.status(401).send({
+      success: false,
+      authenticated: false,
+      message: errors[0].message,
+      redirect: '/signin'
+    })
+  } else {
+    passport.authenticate('local', function (error, user, info) {
+      if (error) return next(error)
+      if (!user) {
+        debug('end checkLoginInformation')
+        return res.status(400).send({
+          success: false,
+          authenticated: false,
+          message: info.message,
+          redirect: redirect
+        })
+      }
+      req.logIn(user, function (error) {
+        if (error) return next(error)
+        debug('end checkLoginInformation')
+        next()
+      })
+    })(req, res, next)
+  }
+}
+
+function createResponseObject (user, token, redirect) {
+  debug('start createResponseObject')
+  return {
+    success: !!user,
+    authenticated: !!user,
+    user: user ? {
+      profile: user.profile,
+      connected: user.connected || {},
+      roles: user.roles,
+      gravatar: user.gravatar,
+      email: user.email,
+      _id: user._id
+    } : {},
+    token: token,
+    redirect: redirect || false
+  }
+}
+
+function postPhoto (req, res, next) {
   debug('start postPhoto')
 
   if (req.file) {
     var filePath = path.resolve(__dirname, '../../../client/uploads/')
-    fs.readFile(req.file.path, function (err, data) {
-      if (err) {
+    fs.readFile(req.file.path, function (error, data) {
+      if (error) {
         debug('end postPhoto')
-        return res.status(400).send(err)
+        return res.status(400).send(error)
       }
       var createDir = filePath + '/' + req.file.originalname
-      fs.writeFile(createDir, data, function (err) {
-        if (err) {
+      fs.writeFile(createDir, data, function (error) {
+        if (error) {
           debug('end postPhoto')
-          return res.status(400).send(err)
+          return res.status(400).send(error)
         } else {
           debug('end postPhoto')
           return res.status(201).send()
@@ -502,3 +431,148 @@ exports.postPhoto = function (req, res, next) {
     return res.status(400).send()
   }
 }
+
+// Azure
+// exports.getUserAzure = getUserAzure
+// exports.postCallbackAzure = postCallbackAzure
+// exports.getUnlinkAzure = getUnlinkAzure
+
+// function getUserAzure (req, res, next) {
+//   var outlook = require('node-outlook')
+//   var token = req.user.azure ? req.user.azure.token : ''
+//   outlook.base.setApiEndpoint('https://outlook.office.com/api/v2.0')
+//   var queryParams = {
+//     '$select': 'DisplayName, EmailAddress'
+//   }
+//   outlook.base.getUser({token: token, odataParams: queryParams}, function (error, result) {
+//     if (error) {
+//       res.send(error)
+//     } else if (result) {
+//       res.send(result)
+//     }
+//   })
+// }
+
+// function postCallbackAzure (req, res, next) {
+//   res.redirect('/account')
+// }
+
+// function getUnlinkAzure (req, res, next) {
+//   User.findById(req.user._id, function (error, user) {
+//     if (error) { return next(error) }
+//     user.azure = {}
+//     user.save(function (error) {
+//       if (error) { return next(error) }
+//       res.redirect('/account')
+//     })
+//   })
+// }
+
+// Instagram
+// exports.postCallbackInstagram = postCallbackInstagram
+// exports.getUnlinkInstagram = getUnlinkInstagram
+
+// function postCallbackInstagram (req, res, next) {
+//   res.redirect('/account')
+// }
+// function getUnlinkInstagram (req, res, next) {
+//   User.findById(req.user._id, function (error, user) {
+//     if (error) { return next(error) }
+//     user.instagram = {}
+//     user.save(function (error) {
+//       if (error) { return next(error) }
+//       res.redirect('/account')
+//     })
+//   })
+// }
+
+// Facebook
+// exports.postCallbackFacebook = postCallbackFacebook
+// exports.getUnlinkFacebook = getUnlinkFacebook
+
+// function postCallbackFacebook (req, res, next) {
+//   res.redirect('/account')
+// }
+// function getUnlinkFacebook (req, res, next) {
+//   User.findById(req.user._id, function (error, user) {
+//     if (error) { return next(error) }
+//     user.facebook = {}
+//     user.save(function (error) {
+//       if (error) { return next(error) }
+//       res.redirect('/account')
+//     })
+//   })
+// }
+
+// Twitter
+// exports.postCallbackTwitter = postCallbackTwitter
+// exports.getUnlinkTwitter = getUnlinkTwitter
+
+// function postCallbackTwitter (req, res, next) {
+//   res.redirect('/account')
+// }
+// function getUnlinkTwitter (req, res, next) {
+//   User.findById(req.user._id, function (error, user) {
+//     if (error) { return next(error) }
+//     user.twitter = {}
+//     user.save(function (error) {
+//       if (error) { return next(error) }
+//       res.redirect('/account')
+//     })
+//   })
+// }
+
+// GitHub
+// exports.postCallbackGitHub = postCallbackGitHub
+// exports.getUnlinkGitHub = getUnlinkGitHub
+
+// function postCallbackGitHub (req, res, next) {
+//   res.redirect('/account')
+// }
+// function getUnlinkGitHub (req, res, next) {
+//   User.findById(req.user._id, function (error, user) {
+//     if (error) { return next(error) }
+//     user.gitHub = {}
+//     user.save(function (error) {
+//       if (error) { return next(error) }
+//       res.redirect('/account')
+//     })
+//   })
+// }
+
+// Google
+// exports.postCallbackGoogle = postCallbackGoogle
+// exports.getUnlinkGoogle = getUnlinkGoogle
+
+// function postCallbackGoogle (req, res, next) {
+//   res.redirect('/account')
+// }
+// function getUnlinkGoogle (req, res, next) {
+//   User.findById(req.user._id, function (error, user) {
+//     if (error) { return next(error) }
+//     user.google = {}
+//     user.save(function (error) {
+//       if (error) { return next(error) }
+//       res.redirect('/account')
+//     })
+//   })
+// }
+
+// LinkedIn
+// exports.postCallbackLinkedIn = postCallbackLinkedIn
+// exports.getUnlinkLinkedIn = getUnlinkLinkedIn
+
+// function postCallbackLinkedIn (req, res, next) {
+//   res.redirect('/account')
+// }
+// function getUnlinkLinkedIn (req, res, next) {
+//   User.findById(req.user._id, function (error, user) {
+//     if (error) { return next(error) }
+//     user.linkedIn = {}
+//     user.save(function (error) {
+//       if (error) { return next(error) }
+//       res.redirect('/account')
+//     })
+//   })
+// }
+// LOOK AT CREATING SERVICE ACCOUNTS IN LATER VERSIONS

@@ -1,8 +1,9 @@
+module.exports.registerSystemInfo = build
+
 var _ = require('lodash')
 // var babel = require('babel-core')
 var debug = require('debug')('menstackjs:register')
-var fs = require('fs')
-var mongoose = require('mongoose')
+var fs = require('fs-extra')
 var path = require('path')
 var pathExists = require('is-there')
 var dir = __dirname
@@ -12,10 +13,6 @@ function Register (self, done) {
   this.getFolderContents(self)
   // compileBackendScripts > Used to compile all of the info need for all of the backend modules.
   this.compileBackendScripts(self)
-  // setupServerModels > Used to set up the mongoose modules.
-  this.setupServerModels(self)
-  // setupServerRoutes > Used to set up the module routes.
-  this.setupServerRoutes(self)
   // frontendFiles > Returns the files to send to the frontend
   return self.frontendFiles
 }
@@ -94,34 +91,6 @@ Register.prototype.compileBackendScripts = function (self) {
   debug('end compileBackendScripts')
 }
 
-Register.prototype.setupServerModels = function (self) {
-  debug('started createBackendModels')
-  // var self = this
-  self.models = {}
-  self.backendFiles.model.forEach(function (n) {
-    debug('Model: %s - %s', n.name, n.url)
-    self.models[n.name] = mongoose.model(n.name, require(n.url))
-    self.models[n.name].on('index', function (err) {
-      if (err) throw err
-    })
-  })
-  debug('end createBackendModels')
-}
-
-Register.prototype.setupServerRoutes = function (self) {
-  debug('started createBackendRoutes')
-  // var self = this
-
-  self.backendFiles.routes.forEach(function (n) {
-    debug('Route : %s', n.url)
-    require(n.url)(self.app, self.middleware, self.mail, self.settings, self.models)
-  })
-
-  debug('end createBackendRoutes')
-}
-
 function build (options) {
   return new Register(options)
 }
-
-module.exports = build

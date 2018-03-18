@@ -2,10 +2,10 @@
 [![npm-issues](https://img.shields.io/github/issues/greenpioneersolutions/menstackjs.svg)](https://github.com/greenpioneersolutions/menstackjs/issues)
 [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com/)
 [![Build Status](https://travis-ci.org/greenpioneersolutions/menstackjs.svg?branch=master)](https://travis-ci.org/greenpioneersolutions/menstackjs)
-[![Join the chat at https://gitter.im/greenpioneersolutions/meanstackjs](https://badges.gitter.im/greenpioneersolutions/meanstackjs.svg)](https://gitter.im/greenpioneersolutions/meanstackjs?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-[![Known Vulnerabilities](https://snyk.io/test/github/greenpioneersolutions/meanstackjs/badge.svg)](https://snyk.io/test/github/greenpioneersolutions/meanstackjs/badge.svg)
-[![Codewake](https://www.codewake.com/badges/codewake2.svg)](https://www.codewake.com/p/meanstackjs)
-[![Code Triagers Badge](https://www.codetriage.com/greenpioneersolutions/meanstackjs/badges/users.svg)](https://www.codetriage.com/greenpioneersolutions/meanstackjs)
+[![Join the chat at https://gitter.im/greenpioneersolutions/menstackjs](https://badges.gitter.im/greenpioneersolutions/menstackjs.svg)](https://gitter.im/greenpioneersolutions/menstackjs?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Known Vulnerabilities](https://snyk.io/test/github/greenpioneersolutions/menstackjs/badge.svg)](https://snyk.io/test/github/greenpioneersolutions/menstackjs/badge.svg)
+[![Codewake](https://www.codewake.com/badges/codewake2.svg)](https://www.codewake.com/p/menstackjs)
+[![Code Triagers Badge](https://www.codetriage.com/greenpioneersolutions/menstackjs/badges/users.svg)](https://www.codetriage.com/greenpioneersolutions/menstackjs)
 [![Get help on Codementor](https://cdn.codementor.io/badges/get_help_github.svg)](https://www.codementor.io/jasonhumphrey?utm_source=github&utm_medium=button&utm_term=jasonhumphrey&utm_campaign=github)
 [![Donatee](https://img.shields.io/badge/paypal-donate-blue.svg)](https://paypal.me/greenpioneer)
 
@@ -20,27 +20,27 @@ The best developers want to be efficient and productive, quickly prototyping and
 How to Learn Men Stack JS
 -----------------
 Start learning with documentation:
-* [Check Documentation Here](https://github.com/greenpioneersolutions/meanstackjs/wiki)
+* [Check Documentation Here](https://github.com/greenpioneersolutions/menstackjs/wiki)
 
 
 Check out this YouTube channel that has content to help you:
-* [Subscribe to our Youtube Channel - MeanStackJs](https://www.youtube.com/channel/UC5lpSv5tNowgWxC9crTl97g)
-* [Watch MeanStackJS - Releases](https://www.youtube.com/playlist?list=PLhJ-Q2setTdrhK1m0F1lUfZsIzBbw6wny)
-* [Watch MeanStackJS - How to series](https://www.youtube.com/playlist?list=PLhJ-Q2setTdqgwW6U39s_oMAehgtXa15O)
-* [Watch MeanStackJS - Error series](https://www.youtube.com/playlist?list=PLhJ-Q2setTdr19ha6bx7jt6Bu2RCM5c5_)
-* [Watch MeanStackJS - What is series](https://www.youtube.com/playlist?list=PLhJ-Q2setTdpkHfA-mDMSjl4Wv-trKlY8)
+* [Subscribe to our Youtube Channel - MenStackJs](https://www.youtube.com/channel/UC5lpSv5tNowgWxC9crTl97g)
+* [Watch MenStackJS - Releases](https://www.youtube.com/playlist?list=PLhJ-Q2setTdrhK1m0F1lUfZsIzBbw6wny)
+* [Watch MenStackJS - How to series](https://www.youtube.com/playlist?list=PLhJ-Q2setTdqgwW6U39s_oMAehgtXa15O)
+* [Watch MenStackJS - Error series](https://www.youtube.com/playlist?list=PLhJ-Q2setTdr19ha6bx7jt6Bu2RCM5c5_)
+* [Watch MenStackJS - What is series](https://www.youtube.com/playlist?list=PLhJ-Q2setTdpkHfA-mDMSjl4Wv-trKlY8)
 
 For more control or something more basic, start here instead:
-* [Lite Version](https://github.com/greenpioneersolutions/meanstackjs-lite)
+* [Lite Version](https://github.com/greenpioneersolutions/menstackjs-lite)
 
-For the Api version, start here instead:
-* [Men Version](https://github.com/greenpioneersolutions/menstackjs)
+For full version, start here instead:
+* [Full Version](https://github.com/greenpioneersolutions/menstackjs)
 
 Want more content?
 * [LiveCoding.TV](https://www.livecoding.tv/greenpioneer/)
 * [GPS Style Guide](https://github.com/greenpioneersolutions/gps-style-guide)
 * [GPS Setup Guide](https://github.com/greenpioneersolutions/gps-setup-guide)
-* [Roadmap](https://github.com/greenpioneersolutions/meanstackjs/wiki/Roadmap)
+* [Roadmap](https://github.com/greenpioneersolutions/menstackjs/wiki/Roadmap)
 
 What is Men Stack JS?
 -----------------
@@ -49,9 +49,9 @@ What is Men Stack JS?
 - [Express](http://expressjs.com/) - Express is a minimal and flexible node.js web application framework, providing a robust set of features for building single and multi-page, and hybrid web applications
 - [Node.js](http://www.nodejs.org/) - Node.js is a platform built on Chrome's JavaScript runtime for easily building fast, scalable network applications
 
-[Check Demo Here](https://meanstackjs.herokuapp.com/)
+[Check Demo Here](https://menstackjs.herokuapp.com/)
 
-[Check Documentation Here](https://github.com/greenpioneersolutions/meanstackjs/wiki)
+[Check Documentation Here](https://github.com/greenpioneersolutions/menstackjs/wiki)
 
 Pre-Requisites
 -------------
@@ -62,9 +62,9 @@ Pre-Requisites
   - <img src="https://lh5.googleusercontent.com/-2YS1ceHWyys/AAAAAAAAAAI/AAAAAAAAAAc/0LCb_tsTvmU/s46-c-k/photo.jpg" height="17">&nbsp; [Linux Mongodb](https://docs.mongodb.org/manual/administration/install-on-linux/)
 - <img src="https://nodejs.org/static/apple-touch-icon.png" height="17">&nbsp; [Download](http://nodejs.org) and Install Node.js  - nodeschool has free <a href=" http://nodeschool.io/#workshoppers">node tutorials</a> to get you started
 
-[Check Documentation Here](https://github.com/greenpioneersolutions/meanstackjs/wiki)
+[Check Documentation Here](https://github.com/greenpioneersolutions/menstackjs/wiki)
 
-[Check Demo Here](https://meanstackjs.herokuapp.com/)
+[Check Demo Here](https://menstackjs.herokuapp.com/)
 
 Getting Started
 ---------------
@@ -87,11 +87,11 @@ npm start
 node index.js
 ```
 
-[Check Documentation Here](https://github.com/greenpioneersolutions/meanstackjs/wiki)
+[Check Documentation Here](https://github.com/greenpioneersolutions/menstackjs/wiki)
 
-[Check Demo Here](https://meanstackjs.herokuapp.com/)
+[Check Demo Here](https://menstackjs.herokuapp.com/)
 
-[Check Roadmap Here](https://github.com/greenpioneersolutions/meanstackjs/wiki/Roadmap)
+[Check Roadmap Here](https://github.com/greenpioneersolutions/menstackjs/wiki/Roadmap)
 
 [express]: <http://expressjs.com>
 [AngularJS]: <http://angularjs.org>
