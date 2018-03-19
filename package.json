@@ -1,0 +1,39 @@
+{
+  "name": "menstackjs",
+  "version": "2.0.0-alpha.1",
+  "description": "menstack",
+  "main": "server.men.js",
+  "scripts": {
+    "start": "npm run  build && node server/dist/run.js",
+    "test": "npm run mocha",
+    "build": "node_modules/.bin/babel server/src -s -D -d server/dist --presets es2015,stage-0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://GreenPioneer@github.com/greenpioneersolutions/menstackjs.git"
+  },
+  "keywords": [
+    "menstackjs"
+  ],
+  "author": "GPS",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/greenpioneersolutions/menstackjs/issues"
+  },
+  "homepage": "https://github.com/greenpioneersolutions/menstackjs#readme",
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "express": "^5.0.0-alpha.6",
+    "lodash": "^4.17.5",
+    "mongoose": "^5.0.10",
+    "morgan": "^1.9.0",
+    "run-auto": "^2.0.1",
+    "spdy": "^3.4.7"
+  },
+  "devDependencies": {
+    "babel-cli": "^7.0.0-beta.3 ",
+    "babel-core": "^7.0.0-beta.3",
+    "babel-preset-es2015": "^7.0.0-beta.3",
+    "babel-preset-stage-0": "^7.0.0-beta.3"
+  }
+}
