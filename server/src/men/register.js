@@ -10,4 +10,4 @@ function register (self) {
         socket: glob.sync(path.join(__dirname,'/modules/**/*.socket.js'))
     }
 }
-export default register;
+export {register}

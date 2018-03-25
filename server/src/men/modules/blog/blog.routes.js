@@ -1,19 +1,18 @@
 import blog from './blog.controller.js';
-
-export default (app, auth, mail, settings, models, logger) => {
-  // GET
-  app.get('/api/blog/', blog.getBlog)
-  app.get('/api/blog/:blogId', blog.getBlogById)
-
-  // POST
-  app.post('/api/blog',  blog.postBlog) //auth.isAuthenticated,
-
-  // PUT
-  app.put('/api/blog/:blogId',  blog.putBlog)// auth.isAuthorized('blog'), 
-  
-  // DELETE
-  app.delete('/api/blog/:blogId',  blog.deleteBlog)//auth.isAuthorized('blog'),
-
-  // PARAM
-  app.param('blogId', blog.paramBlog)
+const { check, validationResult } = require('express-validator/check');
+const blogIdChecks = [
+  check('blogId').exists().withMessage('Your Blog ID cannot be blank'),
+  check('blogId').isMongoId().withMessage('Your Blog ID has to be a real id')
+]
+const blogCreateIdChecks = [
+  check('title').exists().withMessage('title cannot be blank'),
+  check('content').exists().withMessage('content cannot be blank'),
+  check('user').isMongoId().withMessage('user has to be a real id')
+]
+module.exports = (app, auth, mail, settings, models, logger) => {
+  app.get('/api/blog/',blog.getBlog)
+  app.get('/api/blog/:blogId',blogIdChecks,blog.paramBlog, blog.getBlogById)
+  app.post('/api/blog', auth.isAuthenticated, blogCreateIdChecks, blog.postBlog)
+  app.put('/api/blog/:blogId',blogIdChecks, blog.paramBlog, auth.isAuthorized('blog'),  blog.putBlog) 
+  app.delete('/api/blog/:blogId', blogIdChecks, blog.paramBlog, auth.isAuthorized('blog'), blog.deleteBlog)
 };

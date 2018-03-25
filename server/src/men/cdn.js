@@ -1,4 +1,4 @@
 function cdn (self) {
-    self.cdn = 'cdn'
+  self.cdn = false
 }
-export default cdn;
+export {cdn};

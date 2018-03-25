@@ -2,9 +2,9 @@
   "name": "menstackjs",
   "version": "2.0.0-alpha.1",
   "description": "menstack",
-  "main": "server.men.js",
   "scripts": {
-    "start": "npm run  build && node server/dist/run.js",
+    "dev": "node_modules/.bin/nodemon -w server/src --exec \"npm start\"",
+    "start": "npm run build && node ./server/dist/run.js",
     "test": "npm run mocha",
     "build": "node_modules/.bin/babel server/src -s -D -d server/dist --presets es2015,stage-0"
   },
@@ -23,17 +23,32 @@
   "homepage": "https://github.com/greenpioneersolutions/menstackjs#readme",
   "dependencies": {
     "body-parser": "^1.18.2",
+    "compression": "^1.7.2",
+    "connect-mongo": "^2.0.1",
+    "cookie-parser": "^1.4.3",
+    "cors": "^2.8.4",
+    "dotenv": "^5.0.1",
     "express": "^5.0.0-alpha.6",
+    "express-session": "^1.15.6",
+    "express-validator": "^5.0.3",
+    "helmet": "^3.12.0",
+    "jsonwebtoken": "^8.2.0",
     "lodash": "^4.17.5",
+    "method-override": "^2.3.10",
     "mongoose": "^5.0.10",
     "morgan": "^1.9.0",
+    "passport": "^0.4.0",
+    "passport-local": "^1.0.0",
     "run-auto": "^2.0.1",
-    "spdy": "^3.4.7"
+    "sendmail": "^1.4.1",
+    "spdy": "^3.4.7",
+    "winston": "^3.0.0-rc3"
   },
   "devDependencies": {
     "babel-cli": "^7.0.0-beta.3 ",
     "babel-core": "^7.0.0-beta.3",
     "babel-preset-es2015": "^7.0.0-beta.3",
-    "babel-preset-stage-0": "^7.0.0-beta.3"
+    "babel-preset-stage-0": "^7.0.0-beta.3",
+    "nodemon": "^1.17.2"
   }
 }

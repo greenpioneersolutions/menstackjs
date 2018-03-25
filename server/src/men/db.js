@@ -1,3 +1,5 @@
+export { init, disconnect, connect, reconnect, readyState }
+
 import _ from 'lodash';
 import path from 'path';
 import mongoose from 'mongoose';
@@ -31,5 +33,3 @@ function registerModels(self){
 function readyState (){// 0 = disconnected// 1 = connected// 2 = connecting// 3 = disconnecting
     return mongoose.connection.readyState
 }
-
-module.exports = { init, disconnect, connect, reconnect, readyState }

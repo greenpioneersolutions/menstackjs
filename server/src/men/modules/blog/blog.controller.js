@@ -1,26 +1,15 @@
-export {getBlog};
-export {deleteBlog};
-export {postBlog};
-export {putBlog};
-export {getBlogById};
-export {paramBlog};
+export default {getBlog,deleteBlog,postBlog,putBlog,getBlogById,paramBlog};
 import auto from 'run-auto';
 import mongoose from 'mongoose';
-const blogs = mongoose.model('blog');
 import _ from 'lodash';
+const blogs = mongoose.model('blog');
+const { check, validationResult } = require('express-validator/check');
 
 function getBlog (req, res, next) {
-  console.log('start getBlog')
   auto({
     blogs(cb) {
       blogs
         .find()
-        // .where(req.queryParameters.where || '')
-        // .sort(req.queryParameters.sort || '')
-        // .select(req.queryParameters.select || '')
-        // .limit(req.queryParameters.limit || '')
-        // .skip(req.queryParameters.skip || '')
-        // .populate(req.queryParameters.populateId || 'user', req.queryParameters.populateItems || '')
         .exec(cb)
     },
     count(cb) {
@@ -31,7 +20,6 @@ function getBlog (req, res, next) {
     }
   }, (error, results) => {
     if (error) return next(error)
-    console.log('end getBlog')
     return res.status(200).send(results)
   })
 }
@@ -44,14 +32,12 @@ function deleteBlog (req, res, next) {
 }
 
 function postBlog (req, res, next) {
-  // EX. of how to use express validator
-  // req.assert('name', 'The name cannot be blank').notEmpty()
-  const errors = req.validationErrors();
+  const errors = validationResult(req)
 
-  if (errors) {
+  if (!errors.isEmpty()) {
     return res.status(400).send({
       success: false,
-      message: errors[0].message,
+      message: errors.array()[0].msg,
       redirect: '/'
     })
   }
@@ -72,22 +58,17 @@ function putBlog (req, res, next) {
 }
 
 function getBlogById (req, res, next) {
-  console.log('start getBlogById')
   res.send(req.blog)
-  console.log('end getBlogById')
 }
 
-function paramBlog (req, res, next, id) {
-  console.log('start paramBlog')
-
-  req.assert('blogId', 'Your Blog ID cannot be blank').notEmpty()
-  req.assert('blogId', 'Your Blog ID has to be a real id').isMongoId()
-
-  const errors = req.validationErrors();
-  if (errors) {
+function paramBlog (req, res, next) {
+  const errors = validationResult(req)
+  console.log(errors.array())
+  console.log(errors.isEmpty())
+  if (!errors.isEmpty()) {
     return res.status(400).send({
       success: false,
-      message: errors[0].message,
+      message: errors.array()[0].msg,
       redirect: '/'
     })
   }
@@ -95,14 +76,13 @@ function paramBlog (req, res, next, id) {
   auto({
     blog(cb) {
       blogs
-        .findOne({_id: id})
+        .findOne({_id: req.params.blogId})
         .populate('user')
         .exec(cb)
     }
   }, (error, results) => {
     if (error) return next(error)
     req.blog = results.blog
-    console.log('end paramBlog')
     next()
   })
 }
