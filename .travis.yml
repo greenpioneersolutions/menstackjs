@@ -17,6 +17,7 @@ install:
 before_script:
   - mkdir ${PWD}/mongodb-linux-x86_64-3.6.3/data
   - ${PWD}/mongodb-linux-x86_64-3.6.3/bin/mongod --dbpath ${PWD}/mongodb-linux-x86_64-3.6.3/data --logpath ${PWD}/mongodb-linux-x86_64-3.6.3/mongodb.log --fork
+  - npm i
   - npm i -g nsp
 script:
   - npm test
