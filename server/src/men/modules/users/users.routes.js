@@ -1,4 +1,4 @@
-import user from './users.controller.js';
+import user from './users.controller.js'
 
 module.exports = (app, auth, mail, settings, models, logger) => {
   app.post('/api/user/authenticate', user.checkLoginInformation, user.postAuthenticate)
@@ -14,4 +14,4 @@ module.exports = (app, auth, mail, settings, models, logger) => {
   app.get('/api/user/token', auth.isAuthenticated, user.getKey)
   app.post('/api/user/token', user.checkLoginInformation, user.postKey)
   app.get('/api/user/token/reset', auth.isAuthenticated, user.getKeyReset)
-};
+}

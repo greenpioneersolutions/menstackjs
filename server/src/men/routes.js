@@ -1,14 +1,14 @@
 function routes (self) {
-    for(let i =0; i < self.files.routes.length; i++){
-        require(self.files.routes[i])(self.app, self.middleware, self.mail, self.settings, self.models, self.logger)
-    }
-    self.app.get('/:url(api|modules)/*', function (req, res) {
-        res.status(404).send({
-            error: 'nothing found at ' + req.path
-        })
+  for (let i = 0; i < self.files.routes.length; i++) {
+    require(self.files.routes[i])(self.app, self.middleware, self.mail, self.settings, self.models, self.logger)
+  }
+  self.app.get('/:url(api|modules)/*', function (req, res) {
+    res.status(404).send({
+      error: 'nothing found at ' + req.path
     })
-    self.app.get('/', function (req, res, next) {
-        res.send(`
+  })
+  self.app.get('/', function (req, res, next) {
+    res.send(`
             <!doctype html>
             <html xmlns="http://www.w3.org/1999/xhtml" xmlns:fb="http://www.facebook.com/2008/fbml" xmlns:og="http://opengraphprotocol.org/schema/" lang="en">
             <head  prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb#">
@@ -30,9 +30,9 @@ function routes (self) {
             </body>
             </html>
         `)
-    })
-    self.app.get('/*', function (req, res, next) {
-        res.redirect('/')
-    })
+  })
+  self.app.get('/*', function (req, res, next) {
+    res.redirect('/')
+  })
 }
-export {routes};
+export {routes}

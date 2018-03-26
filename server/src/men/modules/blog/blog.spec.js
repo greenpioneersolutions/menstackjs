@@ -1,6 +1,6 @@
-import {assert} from 'chai';
-import request from 'supertest';
-let blogid = '';
+import {assert} from 'chai'
+import request from 'supertest'
+let blogid = ''
 
 describe('BLOG', () => {
   describe('GET /api/blog', () => {

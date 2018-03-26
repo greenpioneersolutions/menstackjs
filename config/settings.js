@@ -1,3 +1,4 @@
-export default {
-    app:'Men Stack JS'
+require('dotenv').config({silent: true})
+module.exports = {
+  appName: 'Men Stack JS GLOBAL'
 }

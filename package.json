@@ -5,8 +5,11 @@
   "scripts": {
     "dev": "node_modules/.bin/nodemon -w server/src --exec \"npm start\"",
     "start": "npm run build && node ./server/dist/run.js",
-    "test": "npm run mocha",
-    "build": "node_modules/.bin/babel server/src -s -D -d server/dist --presets es2015,stage-0"
+    "test": "npm run mocha && npm run lint",
+    "mocha": "node_modules/.bin/mocha tests/unit/mocha.test.js --exit ",
+    "build": "node_modules/.bin/babel server/src -s -D -d server/dist --presets es2015,stage-0",
+    "lint": "node_modules/.bin/standard",
+    "lint:fix": "node_modules/.bin/standard --fix"
   },
   "repository": {
     "type": "git",
@@ -49,6 +52,35 @@
     "babel-core": "^7.0.0-beta.3",
     "babel-preset-es2015": "^7.0.0-beta.3",
     "babel-preset-stage-0": "^7.0.0-beta.3",
-    "nodemon": "^1.17.2"
+    "nodemon": "^1.17.2",
+    "standard": "^11.0.1"
+  },
+  "standard": {
+    "globals": [
+      "angular",
+      "toastr",
+      "moment",
+      "self",
+      "_",
+      "describe",
+      "it",
+      "__dirname",
+      "localStorage",
+      "io",
+      "expect",
+      "inject",
+      "beforeEach",
+      "before",
+      "afterEach",
+      "after",
+      "screen"
+    ],
+    "ignore": [
+      "logs/",
+      "database/",
+      "downloads/",
+      "backups/",
+      "tools/"
+    ]
   }
 }

@@ -1,5 +1,5 @@
-import {assert} from 'chai';
-import request from 'supertest';
+import {assert} from 'chai'
+import request from 'supertest'
 
 describe('USERS', () => {
   describe('GET /api/user', () => {

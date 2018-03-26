@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose from 'mongoose'
 
 const blogSchema = mongoose.Schema({
   created: {
@@ -20,6 +20,6 @@ const blogSchema = mongoose.Schema({
     ref: 'users',
     required: true
   }
-});
+})
 
-export default blogSchema;
+export default blogSchema

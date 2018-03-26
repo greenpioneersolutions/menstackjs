@@ -1,5 +1,5 @@
-import cors from 'cors';
-import helmet from 'helmet';
+import cors from 'cors'
+import helmet from 'helmet'
 
 function security (self) {
   // HELMET SECURITY MIDDLEWARE
@@ -8,4 +8,4 @@ function security (self) {
   self.app.use(cors())
   self.app.options('*', cors()) // include before other routes
 }
-export {security};
+export {security}

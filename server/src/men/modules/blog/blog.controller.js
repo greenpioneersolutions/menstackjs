@@ -1,18 +1,20 @@
-export default {getBlog,deleteBlog,postBlog,putBlog,getBlogById,paramBlog};
-import auto from 'run-auto';
-import mongoose from 'mongoose';
-import _ from 'lodash';
-const blogs = mongoose.model('blog');
-const { check, validationResult } = require('express-validator/check');
+import auto from 'run-auto'
+import mongoose from 'mongoose'
+import _ from 'lodash'
+
+export default {getBlog, deleteBlog, postBlog, putBlog, getBlogById, paramBlog}
+
+const blogs = mongoose.model('blog')
+const { validationResult } = require('express-validator/check')
 
 function getBlog (req, res, next) {
   auto({
-    blogs(cb) {
+    blogs (cb) {
       blogs
         .find()
         .exec(cb)
     },
-    count(cb) {
+    count (cb) {
       blogs
         .find()
         .count()
@@ -74,7 +76,7 @@ function paramBlog (req, res, next) {
   }
 
   auto({
-    blog(cb) {
+    blog (cb) {
       blogs
         .findOne({_id: req.params.blogId})
         .populate('user')

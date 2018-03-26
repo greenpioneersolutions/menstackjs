@@ -1,9 +1,10 @@
-export {hasRole,isAdmin, isAuthorized, isAuthenticated,checkAuthenticated}
-import _ from 'lodash';
-import tokenAPI from './token.js';
+import _ from 'lodash'
+import tokenAPI from './token.js'
+
+export {hasRole, isAdmin, isAuthorized, isAuthenticated, checkAuthenticated}
 
 function checkAuthenticated (req, cb) {
-  const token = req.headers.authorization || req.query.token || req.body.token; // || req.headers['x-access-token']
+  const token = req.headers.authorization || req.query.token || req.body.token // || req.headers['x-access-token']
   if (req.isAuthenticated()) {
     return cb()
   } else if (token) {
@@ -13,10 +14,11 @@ function checkAuthenticated (req, cb) {
       return cb()
     })
   } else {
-    return cb({
+    const errMsg = {
       success: false,
       message: 'User needs to authenticated'
-    })
+    }
+    return cb(errMsg)
   }
 }
 
@@ -31,10 +33,10 @@ function isAuthorized (name, extra) {
   return (req, res, next) => {
     checkAuthenticated(req, error => {
       if (error) return res.status(401).send(error)
-      let user;
-      const reqName = req[name];
+      let user
+      const reqName = req[name]
       if (extra) {
-        const reqExtra = reqName[extra];
+        const reqExtra = reqName[extra]
         reqExtra && reqExtra.user && (user = reqExtra.user)
       } else {
         user = reqName.user

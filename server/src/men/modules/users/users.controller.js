@@ -1,26 +1,26 @@
-export default {postAuthenticate, getAuthenticate, logout, postSignup, putUpdateProfile, putUpdatePassword, deleteDeleteAccount, getReset, postReset, postForgot, getKey, postKey, getKeyReset, checkLoginInformation, createResponseObject};
-import _ from 'lodash';
-import auto from 'run-auto';
-import crypto from 'crypto';
-import passport from 'passport';
-import mongoose from 'mongoose';
-const User = mongoose.model('users');
-import fs from 'fs';
-import path from 'path';
-const settings = require('../../configs/settings.js').get();
-import mail from '../../mail.js';
-import tokenApi from './../../token.js';
+import _ from 'lodash'
+import auto from 'run-auto'
+import crypto from 'crypto'
+import passport from 'passport'
+import mongoose from 'mongoose'
+import mail from '../../mail.js'
+import tokenApi from './../../token.js'
+
+export default {postAuthenticate, getAuthenticate, logout, postSignup, putUpdateProfile, putUpdatePassword, deleteDeleteAccount, getReset, postReset, postForgot, getKey, postKey, getKeyReset, checkLoginInformation, createResponseObject}
+
+const User = mongoose.model('users')
+const settings = require('../../configs/settings.js').get()
 
 function postAuthenticate (req, res, next) {
-  const redirect = req.body.redirect || false;
-  const token = tokenApi.createKey(req.user);
+  const redirect = req.body.redirect || false
+  const token = tokenApi.createKey(req.user)
   res.cookie('token', token)
   return res.status(200).send(exports.createResponseObject(req.user, token, redirect))
 }
 
 function getAuthenticate (req, res) {
-  const redirect = req.body.redirect || false;
-  const token = req.headers.authorization || req.query.token || req.body.token || '';// || req.headers['x-access-token']
+  const redirect = req.body.redirect || false
+  const token = req.headers.authorization || req.query.token || req.body.token || ''// || req.headers['x-access-token']
   if (req.isAuthenticated()) {
     return res.status(200).send(exports.createResponseObject(req.user, tokenApi.createKey(req.user), redirect))
   } else if (token) {
@@ -40,14 +40,13 @@ function logout (req, res) {
 }
 
 function postSignup (req, res, next) {
-
   req.assert('profile', 'Name must not be empty').notEmpty()
   req.assert('email', 'Email is not valid').isEmail()
   req.assert('password', 'Password must be at least 6 characters long').len(6)
   req.assert('confirmPassword', 'Passwords do not match').equals(req.body.password)
 
-  const errors = req.validationErrors();
-  const redirect = req.body.redirect || false;
+  const errors = req.validationErrors()
+  const redirect = req.body.redirect || false
   if (errors) {
     return res.status(400).send({
       success: false,
@@ -62,7 +61,7 @@ function postSignup (req, res, next) {
     profile: {
       name: req.body.profile.name
     }
-  });
+  })
 
   User.findOne({ email: req.body.email }, (error, existingUser) => {
     if (error) {
@@ -75,7 +74,7 @@ function postSignup (req, res, next) {
       if (error && error.code === 11000) {
         return res.status(400).send({ message: 'Account with that email address already exists.' })
       } else if (error && error.name === 'ValidationError') {
-        const keys = _.keys(error.errors);
+        const keys = _.keys(error.errors)
         return res.status(400).send({ message: error.errors[keys[0]].message }) // error.message
       } else if (error) {
         next(error)
@@ -85,7 +84,7 @@ function postSignup (req, res, next) {
             return next(error)
           } else {
             delete user['password']
-            const token = tokenApi.createKey(user);
+            const token = tokenApi.createKey(user)
             res.cookie('token', token)
             return res.status(200).send(exports.createResponseObject(user, token, redirect))
           }
@@ -112,11 +111,10 @@ function putUpdateProfile (req, res, next) {
 }
 
 function putUpdatePassword (req, res, next) {
-
   req.assert('password', 'Password must be at least 4 characters long').len(4)
   req.assert('confirmPassword', 'Passwords do not match').equals(req.body.password)
 
-  const errors = req.validationErrors();
+  const errors = req.validationErrors()
 
   if (errors) {
     return res.status(200).send(errors)
@@ -138,7 +136,6 @@ function putUpdatePassword (req, res, next) {
 }
 
 function deleteDeleteAccount (req, res, next) {
-
   User.remove({ _id: req.user.id }, error => {
     if (error) {
       return next(error)
@@ -149,7 +146,6 @@ function deleteDeleteAccount (req, res, next) {
 }
 
 function getReset (req, res) {
-
   if (req.isAuthenticated()) {
     return res.status(400).send({
       message: 'Already authenticated',
@@ -178,16 +174,15 @@ function getReset (req, res) {
 }
 
 function postReset (req, res, next) {
-
   req.assert('password', 'Password must be at least 4 characters long.').len(4)
   req.assert('confirmPassword', 'Passwords must match.').equals(req.body.password)
-  const errors = req.validationErrors();
+  const errors = req.validationErrors()
 
   if (errors) {
     return res.status(400).send({message: errors})
   } else {
     auto({
-      user(callback) {
+      user (callback) {
         User
           .findOne({ resetPasswordToken: req.params.token })
           .where('resetPasswordExpires').gt(Date.now())
@@ -225,26 +220,25 @@ function postReset (req, res, next) {
         return next(error)
       }
       delete user.password
-      const redirect = req.body.redirect || '/';
+      const redirect = req.body.redirect || '/'
       return res.status(200).send(exports.createResponseObject(user, '', redirect))
     })
   }
 }
 
 function postForgot (req, res, next) {
-
   req.assert('email', 'Please enter a valid email address.').isEmail()
 
-  const errors = req.validationErrors();
+  const errors = req.validationErrors()
 
   if (errors) {
     return res.status(400).send(errors)
   }
 
   auto({
-    token(done) {
+    token (done) {
       crypto.randomBytes(16, (error, buf) => {
-        const token = buf.toString('hex');
+        const token = buf.toString('hex')
         done(error, token)
       })
     },
@@ -285,7 +279,7 @@ function getKey (req, res, next) {
 }
 
 function postKey (req, res, next) {
-  const token = tokenApi.createKey(req.user);
+  const token = tokenApi.createKey(req.user)
   res.cookie('token', token)
   return res.json({token})
 }
@@ -299,12 +293,12 @@ function getKeyReset (req, res, next) {
 }
 
 function checkLoginInformation (req, res, next) {
-  const redirect = req.body.redirect || false;
+  const redirect = req.body.redirect || false
   req.assert('email', 'Email is not valid').isEmail()
   req.assert('password', 'Password cannot be blank').notEmpty()
   req.sanitize('email').normalizeEmail({ remove_dots: false })
 
-  const errors = req.validationErrors();
+  const errors = req.validationErrors()
   if (errors) {
     return res.status(401).send({
       success: false,

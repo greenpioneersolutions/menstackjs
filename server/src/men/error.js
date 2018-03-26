@@ -1,5 +1,7 @@
+import {logger} from './logger.js'
+
 export { middleware }
-import {logger} from './logger.js';
+
 function log (error, cb) {
   if (typeof cb !== 'function') {
     cb = () => {}
@@ -17,10 +19,10 @@ function jsonStringify (obj) {
 
 function middleware (self) {
   self.app.use((error, req, res, next) => {
-    let code = typeof error.status === 'number' ? error.status : 500;
-    let message = error.message || error.msg;
-    let type = 'express';
-    const ip = req.ip || req.headers['x-real-ip'] || req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+    let code = typeof error.status === 'number' ? error.status : 500
+    let message = error.message || error.msg
+    let type = 'express'
+    const ip = req.ip || req.headers['x-real-ip'] || req.headers['x-forwarded-for'] || req.connection.remoteAddress
 
     if (error.name === 'ValidationError') {
       code = 400
@@ -39,7 +41,7 @@ function middleware (self) {
       type = 'mongo'
     }
 
-    const text = `\n=== EXCEPTION ===\n  \nMessage:\n${message}\n\nCode:\n${code}\n \nUser:\n${req.user ? req.user.email : 'no user info'}\n \nIP Address:\n${ip || 'no IP'}\n \nUser-Agent:\n${jsonStringify(req.headers['user-agent'])}\n \nRoute:\n${req.method}-${req.url}\n \nHeaders:\n\n${jsonStringify(req.headers)}\n \nParams:\n\n${jsonStringify(req.params)}\n \nBody:\n\n${jsonStringify(req.body)}\n \nSession:\n\n${jsonStringify(req.session)}\n \nStack:\n${error.stack}\n`;
+    const text = `\n=== EXCEPTION ===\n  \nMessage:\n${message}\n\nCode:\n${code}\n \nUser:\n${req.user ? req.user.email : 'no user info'}\n \nIP Address:\n${ip || 'no IP'}\n \nUser-Agent:\n${jsonStringify(req.headers['user-agent'])}\n \nRoute:\n${req.method}-${req.url}\n \nHeaders:\n\n${jsonStringify(req.headers)}\n \nParams:\n\n${jsonStringify(req.params)}\n \nBody:\n\n${jsonStringify(req.body)}\n \nSession:\n\n${jsonStringify(req.session)}\n \nStack:\n${error.stack}\n`
 
     res.status(code)
 
@@ -54,7 +56,7 @@ function middleware (self) {
       message,
       code,
       title: `${code}`
-    };
+    }
     if (self.environment !== 'production') {
       renderData.text = text
     }

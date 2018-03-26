@@ -1,7 +1,7 @@
-import auth from './passport.js';
-import passport from 'passport';
-import session from 'express-session';
-const MongoStore = require('connect-mongo')(session);
+import auth from './passport.js'
+import passport from 'passport'
+import session from 'express-session'
+const MongoStore = require('connect-mongo')(session)
 
 function authentication (self) {
   self.app.use(session({
@@ -37,4 +37,4 @@ function authentication (self) {
   // OpenID Strategy
   // passport.use(auth.passportOpenIDStrategy)
 }
-export {authentication};
+export {authentication}

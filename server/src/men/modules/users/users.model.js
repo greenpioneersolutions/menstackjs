@@ -1,5 +1,5 @@
-import crypto from 'crypto';
-import mongoose from 'mongoose';
+import crypto from 'crypto'
+import mongoose from 'mongoose'
 const userSchema = new mongoose.Schema({
   email: {
     type: String,
@@ -61,7 +61,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: 'user' // Service Accounts later
   }
-});
+})
 userSchema.pre('save', function (next) {
   // Password hash middleware.
   const user = this
@@ -69,34 +69,24 @@ userSchema.pre('save', function (next) {
   if (!user.isModified('password')) {
     return next()
   } else {
-    user.salt = new Buffer(crypto.randomBytes(16).toString('base64'),'base64')
-    user.password = crypto.pbkdf2Sync(password, this.salt, 10000, 64).toString('base64')
-    next()
+    user.salt = Buffer.from(crypto.randomBytes(16).toString('base64'), 'base64').toString('base64')
+    user.password = crypto.pbkdf2Sync(user.password, user.salt, 10000, 64).toString('base64')
+    return next()
   }
 })
 
-userSchema.methods.comparePassword = function (userPassword, cb) {
-  // Helper method for validating user's password.
-  const user = this;
-  tempPassword = crypto.pbkdf2Sync(userPassword, user.salt, 10000, 64).toString('base64')
-  if(tempPassword === user.password){
+userSchema.methods.comparePassword = function (userPassword, cb) {]
+  const user = this
+  const tempPassword = crypto.pbkdf2Sync(userPassword, user.salt, 10000, 64).toString('base64')
+  if (tempPassword === user.password) {
     user.lastLoggedIn = Date.now()
     user.save(error => {
       if (error) self.logger.warn(error)
     })
     cb(null, true)
-  }else {
+  } else {
     cb(null, false)
   }
-  // bcrypt.compare(candidatePassword, this.password, (error, res) => {
-  //   if (res) {
-  //     user.lastLoggedIn = Date.now()
-  //     user.save(error => {
-  //       if (error) self.logger.warn(error)
-  //     })
-  //   }
-  //   cb(error, res)
-  // })
 }
 userSchema.set('toObject', {
   virtuals: true,
@@ -109,7 +99,7 @@ userSchema.virtual('gravatar').get(function () {
   if (!this.email) {
     return 'https://gravatar.com/avatar/?s=200&d=retro'
   }
-  const md5 = crypto.createHash('md5').update(this.email).digest('hex');
+  const md5 = crypto.createHash('md5').update(this.email).digest('hex')
   return `https://gravatar.com/avatar/${md5}?s=200&d=retro`
 })
 userSchema.virtual('firstName').get(function () {
@@ -120,7 +110,7 @@ userSchema.virtual('lastName').get(function () {
 })
 userSchema.pre('validate', function (next) {
   // Trim whitespace
-  const self = this;
+  const self = this
   if (typeof self.email === 'string') {
     self.email = self.email.trim()
   }
@@ -128,4 +118,4 @@ userSchema.pre('validate', function (next) {
   next()
 })
 
-export default userSchema;
+export default userSchema
