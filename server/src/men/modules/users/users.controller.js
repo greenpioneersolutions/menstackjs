@@ -15,22 +15,22 @@ function postAuthenticate (req, res, next) {
   const redirect = req.body.redirect || false
   const token = tokenApi.createKey(req.user)
   res.cookie('token', token)
-  return res.status(200).send(exports.createResponseObject(req.user, token, redirect))
+  return res.status(200).send(createResponseObject(req.user, token, redirect))
 }
 
 function getAuthenticate (req, res) {
   const redirect = req.body.redirect || false
   const token = req.headers.authorization || req.query.token || req.body.token || ''// || req.headers['x-access-token']
   if (req.isAuthenticated()) {
-    return res.status(200).send(exports.createResponseObject(req.user, tokenApi.createKey(req.user), redirect))
+    return res.status(200).send(createResponseObject(req.user, tokenApi.createKey(req.user), redirect))
   } else if (token) {
     tokenApi.checkKey(token, (error, user) => {
-      if (error) return res.status(200).send(exports.createResponseObject(req.user, '', redirect))
+      if (error) return res.status(200).send(createResponseObject(req.user, '', redirect))
       req.user = user
-      return res.status(200).send(exports.createResponseObject(req.user, token, redirect))
+      return res.status(200).send(createResponseObject(req.user, token, redirect))
     })
   } else {
-    return res.status(200).send(exports.createResponseObject(req.user, '', redirect))
+    return res.status(200).send(createResponseObject(req.user, '', redirect))
   }
 }
 
@@ -86,7 +86,7 @@ function postSignup (req, res, next) {
             delete user['password']
             const token = tokenApi.createKey(user)
             res.cookie('token', token)
-            return res.status(200).send(exports.createResponseObject(user, token, redirect))
+            return res.status(200).send(createResponseObject(user, token, redirect))
           }
         })
       }
@@ -221,7 +221,7 @@ function postReset (req, res, next) {
       }
       delete user.password
       const redirect = req.body.redirect || '/'
-      return res.status(200).send(exports.createResponseObject(user, '', redirect))
+      return res.status(200).send(createResponseObject(user, '', redirect))
     })
   }
 }

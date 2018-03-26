@@ -8,7 +8,6 @@ import auto from 'run-auto'
 
 function men (options, done) {
   const self = this
-  self.environment = 'development'
   self.settings = require('./configs/settings.js').init(options)
   self.done = done
   self.logger = require('./logger.js').logger
@@ -29,7 +28,7 @@ function men (options, done) {
     http: function (cb) {
       if (!self.settings.http.active && (self.settings.https.active === false) !== (self.settings.http.active === false)) return cb()
       http.createServer(self.app).listen(self.settings.http.port, function () {
-        self.logger.info('HTTP Express server listening on port %d in %s mode', self.settings.http.port, self.environment)
+        self.logger.info(`HTTP Express server listening on port ${self.settings.http.port} in ${self.settings.environment} mode`)
         cb()
       })
     },
@@ -43,7 +42,7 @@ function men (options, done) {
             protocols: ['h2']
           }
         }, self.app).listen(self.settings.port.http2, function () {
-          self.logger.info(`HTTPS Express server listening on port ${self.settings.https.port} in ${self.environment} mode`)
+          self.logger.info(`HTTPS Express server listening on port ${self.settings.https.port} in ${self.settings.environment} mode`)
           cb()
         })
       } else {
@@ -51,7 +50,7 @@ function men (options, done) {
           key: fs.readFileSync(self.settings.https.key),
           cert: fs.readFileSync(self.settings.https.cert)
         }, self.app).listen(self.settings.https.port, function () {
-          self.logger.info(`HTTPS Express server listening on port ${self.settings.https.port} in ${self.environment} mode`)
+          self.logger.info(`HTTPS Express server listening on port ${self.settings.https.port} in ${self.settings.environment} mode`)
           cb()
         })
       }
@@ -63,7 +62,7 @@ function men (options, done) {
         res.redirect(301, `https://${req.hostname}${(self.settings.https.port === 443 ? '' : (':' + self.settings.https.port))}${req.originalUrl}`)
       })
       http.createServer(app).listen(self.settings.http.port, function () {
-        self.logger.info(`HTTP FORCE SSL Express server listening on port ${self.settings.http.port} in ${self.environment} mode`)
+        self.logger.info(`HTTP FORCE SSL Express server listening on port ${self.settings.http.port} in ${self.settings.environment} mode`)
         cb()
       })
     }

@@ -12,7 +12,7 @@ module.exports = {
     cert: process.env.HTTPS_CERT || './configs/certificates/certExample.pem'
   },
   mongodb: {
-    uri: process.env.MONGOLAB_URI || 'mongodb://localhost/prod',
+    uri: process.env.MONGOLAB_URI || 'mongodb://localhost/test',
     options: {
       autoIndex: false,
       autoReconnect: true,

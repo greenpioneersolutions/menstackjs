@@ -59,11 +59,10 @@ const userSchema = new mongoose.Schema({
   },
   type: {
     type: String,
-    default: 'user' // Service Accounts later
+    default: 'user'
   }
 })
 userSchema.pre('save', function (next) {
-  // Password hash middleware.
   const user = this
   user.wasNew = user.isNew // for post-save
   if (!user.isModified('password')) {
@@ -75,14 +74,12 @@ userSchema.pre('save', function (next) {
   }
 })
 
-userSchema.methods.comparePassword = function (userPassword, cb) {]
+userSchema.methods.comparePassword = function (userPassword, cb) {
   const user = this
   const tempPassword = crypto.pbkdf2Sync(userPassword, user.salt, 10000, 64).toString('base64')
   if (tempPassword === user.password) {
     user.lastLoggedIn = Date.now()
-    user.save(error => {
-      if (error) self.logger.warn(error)
-    })
+    user.save()
     cb(null, true)
   } else {
     cb(null, false)
@@ -109,7 +106,6 @@ userSchema.virtual('lastName').get(function () {
   return this.profile.name.split(' ').slice(1).join(' ')
 })
 userSchema.pre('validate', function (next) {
-  // Trim whitespace
   const self = this
   if (typeof self.email === 'string') {
     self.email = self.email.trim()

@@ -1,10 +1,10 @@
 module.exports = {
   http: {
-    active: process.env.HTTP_ACTIVE || false,
+    active: process.env.HTTP_ACTIVE || true,
     port: process.env.PORT || 3000
   },
   https: {
-    active: process.env.HTTPS_ACTIVE || true,
+    active: process.env.HTTPS_ACTIVE || false,
     redirect: false,
     http2: true,
     port: process.env.HTTPSPORT || 3043,
@@ -12,7 +12,7 @@ module.exports = {
     cert: process.env.HTTPS_CERT || './configs/certificates/certExample.pem'
   },
   mongodb: {
-    uri: process.env.MONGOLAB_URI || 'mongodb://localhost/dev',
+    uri: process.env.MONGOLAB_URI || 'mongodb://localhost/nightwatch',
     options: {
       autoIndex: false,
       autoReconnect: true,

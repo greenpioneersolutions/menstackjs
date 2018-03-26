@@ -65,8 +65,6 @@ function getBlogById (req, res, next) {
 
 function paramBlog (req, res, next) {
   const errors = validationResult(req)
-  console.log(errors.array())
-  console.log(errors.isEmpty())
   if (!errors.isEmpty()) {
     return res.status(400).send({
       success: false,

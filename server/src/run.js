@@ -1,10 +1,20 @@
-import Men from './men/server.js'
-import error from './men/error.js'
+import glob from 'glob'
+import path from 'path'
+
 
 export default run
 
 if (!module.parent) {
-  run(Men)
+  const serverFiles = glob.sync('./server/dist/**/server.js')
+  const indexFiles = glob.sync('./server/dist/**/index.js')
+  const files = serverFiles.concat(indexFiles)
+  for (let index = 0; index < files.length; index++) {
+    let serverPath = path.resolve(files[0])
+    let server = require(serverPath)
+    run(server.default || server)
+  }
+  //import Men from './men/server.js'
+  //run(Men)
 }
 function run (ServerConstructor, opts, cb) {
   if (!opts) opts = {}
@@ -23,9 +33,8 @@ function run (ServerConstructor, opts, cb) {
 }
 process.on('unhandledRejection', function (reason) {
   console.error('[UNHANDLED REJECTION]')
-  console.error(error.log(reason))
+  console.error(reason)
 })
-
 process.on('uncaughtException', function (err) {
   console.log('[UNCAUGHT EXCEPTION] - ', err.message)
   switch (err.code) {
@@ -69,8 +78,5 @@ process.on('uncaughtException', function (err) {
       console.log('(Operation timed out): A connect or send request failed because the connected party did not properly respond after a period of time. Usually encountered by http or net -- often a sign that a socket.end() was not properly called.')
       break
   }
-  error.log(err, function (logErr) {
-    if (logErr)console.log('Error in log function in errors.js')
-    process.exit(1)
-  })
+  process.exit(1)
 })

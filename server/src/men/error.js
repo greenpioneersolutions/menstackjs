@@ -1,6 +1,6 @@
-import {logger} from './logger.js'
+import { logger } from './logger.js'
 
-export { middleware }
+export { middleware, log }
 
 function log (error, cb) {
   if (typeof cb !== 'function') {
@@ -57,7 +57,7 @@ function middleware (self) {
       code,
       title: `${code}`
     }
-    if (self.environment !== 'production') {
+    if (self.settings.environment !== 'production') {
       renderData.text = text
     }
     return res.send(renderData)

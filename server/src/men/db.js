@@ -1,11 +1,12 @@
 import _ from 'lodash'
 import path from 'path'
 import mongoose from 'mongoose'
+import seed from './seed.js'
 
 export { init, disconnect, connect, reconnect, readyState }
 
-function connect () {
-  mongoose.connect('mongodb://localhost/dev')
+function connect (self) {
+  mongoose.connect(self.settings.mongodb.uri)
 }
 function disconnect (cb) {
   if (!cb)cb = function () {}
@@ -20,6 +21,9 @@ function init (self, cb) {
   if (!cb)cb = function () {}
   connect(self)
   registerModels(self)
+  if (self.settings.environment !== 'production' && self.settings.seed) {
+    seed(self, cb)
+  }
 }
 function registerModels (self) {
   self.models = {}

@@ -2,6 +2,7 @@ import morgan from 'morgan'
 import bodyParser from 'body-parser'
 import cookieParser from 'cookie-parser'
 import compress from 'compression'
+import favicon from 'serve-favicon'
 import methodOverride from 'method-override'
 import path from 'path'
 
@@ -22,5 +23,6 @@ function config (self) {
   self.app.set('view engine', 'html')
   self.app.set('views', path.join(self.dir, '/client'))
   self.app.set('port', self.port)
+  self.app.use(favicon(path.join(__dirname, './configs/assets/favicon.ico')))
 }
 export {config}
