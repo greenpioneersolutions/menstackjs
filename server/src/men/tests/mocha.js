@@ -2,7 +2,6 @@ import glob from 'glob'
 import path from 'path'
 import Men from '../server.js'
 import run from '../../run.js'
-// import seed from './seed.js'
 
 process.env.NODE_ENV = 'nightwatch'
 

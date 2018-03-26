@@ -6,6 +6,8 @@ import path from 'path'
 import spdy from 'spdy'
 import auto from 'run-auto'
 
+export default men
+
 function men (options, done) {
   const self = this
   self.settings = require('./configs/settings.js').init(options)
@@ -68,5 +70,3 @@ function men (options, done) {
     }
   }, done)
 }
-
-export default men

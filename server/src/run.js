@@ -1,7 +1,6 @@
 import glob from 'glob'
 import path from 'path'
 
-
 export default run
 
 if (!module.parent) {
@@ -13,8 +12,8 @@ if (!module.parent) {
     let server = require(serverPath)
     run(server.default || server)
   }
-  //import Men from './men/server.js'
-  //run(Men)
+  // import Men from './men/server.js'
+  // run(Men)
 }
 function run (ServerConstructor, opts, cb) {
   if (!opts) opts = {}

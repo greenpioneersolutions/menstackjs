@@ -5,23 +5,20 @@ import mongoose from 'mongoose'
 const User = mongoose.model('users')
 
 function serializeUser (user, done) {
-  // Passport serialize user function.
   process.nextTick(() => {
     done(null, user.id)
   })
 }
 
 function deserializeUser (id, done) {
-  // Passport deserialize user function.
   User.findOne({
     _id: id
-  }, '-password', (error, user) => {
+  }, '-password -salt', (error, user) => {
     done(error, user)
   })
 }
 
 const localStrategy = new LocalStrategy({ usernameField: 'email' }, (email, password, done) => {
-  // Sign in using Email and Password.
   email = email.toLowerCase()
   User.findOne({
     email
