@@ -1,11 +1,11 @@
 import auto from 'run-auto'
 import mongoose from 'mongoose'
 import _ from 'lodash'
+import {validationResult} from 'express-validator/check'
 
 export default {getBlog, deleteBlog, postBlog, putBlog, getBlogById, paramBlog}
 
 const blogs = mongoose.model('blog')
-const { validationResult } = require('express-validator/check')
 
 function getBlog (req, res, next) {
   auto({

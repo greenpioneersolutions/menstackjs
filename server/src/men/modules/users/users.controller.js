@@ -5,6 +5,7 @@ import passport from 'passport'
 import mongoose from 'mongoose'
 import mail from '../../mail.js'
 import tokenApi from './../../token.js'
+import {validationResult} from 'express-validator/check'
 
 export default {postAuthenticate, getAuthenticate, logout, postSignup, putUpdateProfile, putUpdatePassword, deleteDeleteAccount, getReset, postReset, postForgot, getKey, postKey, getKeyReset, checkLoginInformation, createResponseObject}
 
@@ -40,18 +41,13 @@ function logout (req, res) {
 }
 
 function postSignup (req, res, next) {
-  req.assert('profile', 'Name must not be empty').notEmpty()
-  req.assert('email', 'Email is not valid').isEmail()
-  req.assert('password', 'Password must be at least 6 characters long').len(6)
-  req.assert('confirmPassword', 'Passwords do not match').equals(req.body.password)
-
-  const errors = req.validationErrors()
   const redirect = req.body.redirect || false
-  if (errors) {
+  const errors = validationResult(req)
+  if (!errors.isEmpty()) {
     return res.status(400).send({
       success: false,
       authenticated: false,
-      message: errors[0].message,
+      message: errors.array()[0].msg,
       redirect: '/signup'
     })
   }
@@ -111,13 +107,13 @@ function putUpdateProfile (req, res, next) {
 }
 
 function putUpdatePassword (req, res, next) {
-  req.assert('password', 'Password must be at least 4 characters long').len(4)
-  req.assert('confirmPassword', 'Passwords do not match').equals(req.body.password)
-
-  const errors = req.validationErrors()
-
-  if (errors) {
-    return res.status(200).send(errors)
+  const errors = validationResult(req)
+  if (!errors.isEmpty()) {
+    return res.status(400).send({
+      success: false,
+      message: errors.array()[0].msg,
+      redirect: '/'
+    })
   }
 
   User.findById(req.user.id, (error, user) => {
@@ -174,65 +170,66 @@ function getReset (req, res) {
 }
 
 function postReset (req, res, next) {
-  req.assert('password', 'Password must be at least 4 characters long.').len(4)
-  req.assert('confirmPassword', 'Passwords must match.').equals(req.body.password)
-  const errors = req.validationErrors()
-
-  if (errors) {
-    return res.status(400).send({message: errors})
-  } else {
-    auto({
-      user (callback) {
-        User
-          .findOne({ resetPasswordToken: req.params.token })
-          .where('resetPasswordExpires').gt(Date.now())
-          .exec((error, user) => {
+  const errors = validationResult(req)
+  if (!errors.isEmpty()) {
+    return res.status(400).send({
+      success: false,
+      message: errors.array()[0].msg,
+      redirect: '/'
+    })
+  }
+  auto({
+    user (callback) {
+      User
+        .findOne({ resetPasswordToken: req.params.token })
+        .where('resetPasswordExpires').gt(Date.now())
+        .exec((error, user) => {
+          if (error) {
+            return next(error)
+          }
+          if (!user) {
+            return res.status(400).send({message: 'no user found to reset password for. please hit reset password to get another token'})
+          }
+          user.password = req.body.password
+          user.resetPasswordToken = undefined
+          user.resetPasswordExpires = undefined
+          user.save(error => {
             if (error) {
               return next(error)
             }
-            if (!user) {
-              return res.status(400).send({message: 'no user found to reset password for. please hit reset password to get another token'})
-            }
-            user.password = req.body.password
-            user.resetPasswordToken = undefined
-            user.resetPasswordExpires = undefined
-            user.save(error => {
-              if (error) {
-                return next(error)
-              }
-              req.logIn(user, error => {
-                callback(error, user)
-              })
+            req.logIn(user, error => {
+              callback(error, user)
             })
           })
-      },
-      sendEmail: ['user', (results, callback) => {
-        mail.send({
-          to: results.user.email,
-          subject: settings.email.templates.reset.subject,
-          text: settings.email.templates.reset.text(results.user.email)
-        }, error => {
-          callback(error, true)
         })
-      }]
-    }, (error, user) => {
-      if (error) {
-        return next(error)
-      }
-      delete user.password
-      const redirect = req.body.redirect || '/'
-      return res.status(200).send(createResponseObject(user, '', redirect))
-    })
-  }
+    },
+    sendEmail: ['user', (results, callback) => {
+      mail.send({
+        to: results.user.email,
+        subject: settings.email.templates.reset.subject,
+        text: settings.email.templates.reset.text(results.user.email)
+      }, error => {
+        callback(error, true)
+      })
+    }]
+  }, (error, user) => {
+    if (error) {
+      return next(error)
+    }
+    delete user.password
+    const redirect = req.body.redirect || '/'
+    return res.status(200).send(createResponseObject(user, '', redirect))
+  })
 }
 
 function postForgot (req, res, next) {
-  req.assert('email', 'Please enter a valid email address.').isEmail()
-
-  const errors = req.validationErrors()
-
-  if (errors) {
-    return res.status(400).send(errors)
+  const errors = validationResult(req)
+  if (!errors.isEmpty()) {
+    return res.status(400).send({
+      success: false,
+      message: errors.array()[0].msg,
+      redirect: '/'
+    })
   }
 
   auto({
@@ -294,35 +291,29 @@ function getKeyReset (req, res, next) {
 
 function checkLoginInformation (req, res, next) {
   const redirect = req.body.redirect || false
-  req.assert('email', 'Email is not valid').isEmail()
-  req.assert('password', 'Password cannot be blank').notEmpty()
-  req.sanitize('email').normalizeEmail({ remove_dots: false })
-
-  const errors = req.validationErrors()
-  if (errors) {
-    return res.status(401).send({
+  const errors = validationResult(req)
+  if (!errors.isEmpty()) {
+    return res.status(400).send({
       success: false,
-      authenticated: false,
-      message: errors[0].message,
-      redirect: '/signin'
+      message: errors.array()[0].msg,
+      redirect: '/'
     })
-  } else {
-    passport.authenticate('local', (error, user, info) => {
-      if (error) return next(error)
-      if (!user) {
-        return res.status(400).send({
-          success: false,
-          authenticated: false,
-          message: info.message,
-          redirect
-        })
-      }
-      req.logIn(user, error => {
-        if (error) return next(error)
-        next()
-      })
-    })(req, res, next)
   }
+  passport.authenticate('local', (error, user, info) => {
+    if (error) return next(error)
+    if (!user) {
+      return res.status(400).send({
+        success: false,
+        authenticated: false,
+        message: info.message,
+        redirect
+      })
+    }
+    req.logIn(user, error => {
+      if (error) return next(error)
+      next()
+    })
+  })(req, res, next)
 }
 
 function createResponseObject (user, token, redirect) {

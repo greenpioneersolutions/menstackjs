@@ -1,6 +1,6 @@
 import blog from './blog.controller.js'
+import {check} from 'express-validator/check'
 
-const { check } = require('express-validator/check')
 const blogIdChecks = [
   check('blogId').exists().withMessage('Your Blog ID cannot be blank'),
   check('blogId').isMongoId().withMessage('Your Blog ID has to be a real id')
