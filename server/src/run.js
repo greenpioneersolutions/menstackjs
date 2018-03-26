@@ -1,19 +1,17 @@
 import glob from 'glob'
 import path from 'path'
 
-export default run
+module.exports = run
 
 if (!module.parent) {
-  const serverFiles = glob.sync('./server/dist/**/server.js')
-  const indexFiles = glob.sync('./server/dist/**/index.js')
+  const serverFiles = glob.sync('./server/dist/*/server.js')
+  const indexFiles = glob.sync('./server/dist/*/index.js')
   const files = serverFiles.concat(indexFiles)
   for (let index = 0; index < files.length; index++) {
-    let serverPath = path.resolve(files[0])
+    let serverPath = path.resolve(files[index])
     let server = require(serverPath)
     run(server.default || server)
   }
-  // import Men from './men/server.js'
-  // run(Men)
 }
 function run (ServerConstructor, opts, cb) {
   if (!opts) opts = {}

@@ -6,9 +6,9 @@ import path from 'path'
 import spdy from 'spdy'
 import auto from 'run-auto'
 
-export default men
+module.exports = Men
 
-function men (options, done) {
+function Men (options, done) {
   const self = this
   self.settings = require('./configs/settings.js').init(options)
   self.done = done
@@ -69,4 +69,14 @@ function men (options, done) {
       })
     }
   }, done)
+}
+
+if (!module.parent) {
+  const server = new Men({}, err => {
+    if (err) {
+      console.error(`Error during ${server.settings.title} startup. Abort.`)
+      console.error(err.stack)
+      process.exit(1)
+    }
+  })
 }

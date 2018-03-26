@@ -1,13 +1,12 @@
-import mongoose from 'mongoose'
 import auto from 'run-auto'
 
-export default seed
+module.exports = seed
 
 function seed (self, cb) {
   if (self.settings.environment === 'production' || process.env.NODE_ENV === 'production') return cb()
-  mongoose.connection.dropDatabase()
-  const User = mongoose.model('users')
-  const Blog = mongoose.model('blog')
+
+  const User = self.models['users']
+  const Blog = self.models['blog']
   auto({
     remove (callback) {
       auto({

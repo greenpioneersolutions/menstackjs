@@ -3,7 +3,7 @@ import mongoose from 'mongoose'
 import _ from 'lodash'
 import {validationResult} from 'express-validator/check'
 
-export default {getBlog, deleteBlog, postBlog, putBlog, getBlogById, paramBlog}
+module.exports = {getBlog, deleteBlog, postBlog, putBlog, getBlogById, paramBlog}
 
 const blogs = mongoose.model('blog')
 

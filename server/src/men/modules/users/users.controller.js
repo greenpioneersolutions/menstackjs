@@ -7,7 +7,7 @@ import mail from '../../mail.js'
 import tokenApi from './../../token.js'
 import {validationResult} from 'express-validator/check'
 
-export default {postAuthenticate, getAuthenticate, logout, postSignup, putUpdateProfile, putUpdatePassword, deleteDeleteAccount, getReset, postReset, postForgot, getKey, postKey, getKeyReset, checkLoginInformation, createResponseObject}
+module.exports = {postAuthenticate, getAuthenticate, logout, postSignup, putUpdateProfile, putUpdatePassword, deleteDeleteAccount, getReset, postReset, postForgot, getKey, postKey, getKeyReset, checkLoginInformation, createResponseObject}
 
 const User = mongoose.model('users')
 const settings = require('../../configs/settings.js').get()

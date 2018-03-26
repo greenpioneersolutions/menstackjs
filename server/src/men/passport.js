@@ -1,7 +1,7 @@
 
 import {Strategy as LocalStrategy} from 'passport-local'
-
 import mongoose from 'mongoose'
+
 const User = mongoose.model('users')
 
 function serializeUser (user, done) {
@@ -43,4 +43,5 @@ const localStrategy = new LocalStrategy({ usernameField: 'email' }, (email, pass
     })
   })
 })
-export default { localStrategy, serializeUser, deserializeUser }
+
+module.exports = { localStrategy, serializeUser, deserializeUser }

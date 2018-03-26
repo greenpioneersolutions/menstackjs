@@ -64,19 +64,19 @@ const userSchema = new mongoose.Schema({
 })
 userSchema.pre('save', function (next) {
   const user = this
-  user.wasNew = user.isNew // for post-save
+  user.wasNew = user.isNew
   if (!user.isModified('password')) {
     return next()
   } else {
     user.salt = Buffer.from(crypto.randomBytes(16).toString('base64'), 'base64').toString('base64')
-    user.password = crypto.pbkdf2Sync(user.password, user.salt, 10000, 64).toString('base64')
+    user.password = crypto.pbkdf2Sync(user.password, user.salt, 10000, 64, 'sha512').toString('base64')
     return next()
   }
 })
 
 userSchema.methods.comparePassword = function (userPassword, cb) {
   const user = this
-  const tempPassword = crypto.pbkdf2Sync(userPassword, user.salt, 10000, 64).toString('base64')
+  const tempPassword = crypto.pbkdf2Sync(userPassword, user.salt, 10000, 64, 'base64').toString('base64')
   if (tempPassword === user.password) {
     user.lastLoggedIn = Date.now()
     user.save()
@@ -114,4 +114,4 @@ userSchema.pre('validate', function (next) {
   next()
 })
 
-export default userSchema
+module.exports = userSchema
