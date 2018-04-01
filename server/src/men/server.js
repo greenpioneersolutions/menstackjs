@@ -9,6 +9,9 @@ import auto from 'run-auto'
 module.exports = Men
 
 function Men (options, done) {
+    if(!done) done = function(){
+        return self
+    }
   const self = this
   self.settings = require('./configs/settings.js').init(options)
   self.done = done

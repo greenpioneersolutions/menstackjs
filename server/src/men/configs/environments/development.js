@@ -1,11 +1,11 @@
 module.exports = {
   seed: false,
   http: {
-    active: process.env.HTTP_ACTIVE || true,
+    active: process.env.HTTP_ACTIVE || false,
     port: process.env.PORT || 3000
   },
   https: {
-    active: process.env.HTTPS_ACTIVE || false,
+    active: process.env.HTTPS_ACTIVE || true,
     redirect: false,
     http2: true,
     port: process.env.HTTPSPORT || 3043,
