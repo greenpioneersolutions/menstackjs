@@ -18,11 +18,12 @@ const globalSettings = {
 var settings = {}
 exports.init = function (options) {
   if (!options) options = {}
-  settings = Object.assign({}, globalSettings, {
-    ...getEnvSettings(environment)
-  }, options, {
-    environment: environment
-  })
+  settings = Object.assign({},
+    globalSettings,
+    getEnvSettings(environment),
+    options,
+    { environment: environment }
+  )
   return settings
 }
 exports.get = function () {
