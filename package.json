@@ -6,7 +6,7 @@
     "dev": "node_modules/.bin/nodemon -w server/ --exec \"npm start\"",
     "start": "node ./run.js",
     "test": "npm run mocha && npm run lint",
-    "mocha": "node ./run-tests.js mocha",
+    "mocha": "node ./tests/mocha.js mocha --exit",
     "lint": "node_modules/.bin/standard",
     "lint:fix": "node_modules/.bin/standard --fix",
     "postinstall": "node scripts/postinstall.js"
