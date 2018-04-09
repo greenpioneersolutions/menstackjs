@@ -1,8 +1,7 @@
 const path = require('path')
 const shell = require('shelljs')
 const glob = require('glob')
-
-const serverPackageJsonFiles = glob.sync('./server/src/*/package.json')
+const serverPackageJsonFiles = glob.sync('./server/tools/*/package.json')
 
 for (let index = 0; index < serverPackageJsonFiles.length; index++) {
   let fileLocation = path.resolve(serverPackageJsonFiles[index])
