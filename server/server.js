@@ -78,6 +78,5 @@ function Men (options, done) {
 }
 
 if (!module.parent) {
-  
-  const server = run(Men)
+  run(Men)
 }

@@ -5,7 +5,7 @@ const path = require('path')
 module.exports = { tool }
 
 function tool (self) {
-  const files =  glob.sync(path.join(__dirname, './tools/*/package.json'))
+  const files = glob.sync(path.join(__dirname, './tools/*/package.json'))
   files.forEach((n, k) => {
     const packageInfo = require(`${n}`)
     if (packageInfo.active || _.isUndefined(packageInfo.active)) {
