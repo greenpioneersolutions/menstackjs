@@ -2,6 +2,7 @@ module.exports = run
 
 if (!module.parent) {
   run(require('./server/server.js'))
+  run(require('./socket/server.js'))
 }
 function run (ServerConstructor, opts, cb) {
   if (!opts) opts = {}

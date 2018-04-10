@@ -12,7 +12,8 @@ const globalSettings = {
     http: 3000,
     https: 3000,
     http2: 3001,
-    mongoexpress: 8081
+    mongoexpress: 8081,
+    socket: 8282
   }
 }
 var settings = {}
