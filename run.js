@@ -1,5 +1,7 @@
 module.exports = run
 
+require('./util.js')
+
 if (!module.parent) {
   run(require('./server/server.js'))
   run(require('./socket/server.js'))
