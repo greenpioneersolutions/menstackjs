@@ -1,8 +1,7 @@
 module.exports = run
 
 if (!module.parent) {
-  const serverFiles = require('./server/server.js')
-  run(serverFiles)
+  run(require('./server/server.js'))
 }
 function run (ServerConstructor, opts, cb) {
   if (!opts) opts = {}
@@ -12,7 +11,7 @@ function run (ServerConstructor, opts, cb) {
   }
   return new ServerConstructor(opts, (err, data) => {
     if (err) {
-      console.error(`Error during ${server.settings.title} startup. Abort.`)
+      console.error(`Error during startup. Abort.`)
       console.error(err.stack)
       process.exit(1)
     }
