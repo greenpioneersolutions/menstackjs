@@ -10,7 +10,7 @@ function run (ServerConstructor, opts, cb) {
     cb = opts
     opts = {}
   }
-  const server = new ServerConstructor(opts, (err, data) => {
+  return new ServerConstructor(opts, (err, data) => {
     if (err) {
       console.error(`Error during ${server.settings.title} startup. Abort.`)
       console.error(err.stack)
