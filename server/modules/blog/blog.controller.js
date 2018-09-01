@@ -1,8 +1,8 @@
-module.exports = {getBlog, deleteBlog, postBlog, putBlog, getBlogById, paramBlog}
+module.exports = { getBlog, deleteBlog, postBlog, putBlog, getBlogById, paramBlog }
 
 const auto = require('run-auto')
 const _ = require('lodash')
-const {validationResult} = require('express-validator/check')
+const { validationResult } = require('express-validator/check')
 const mongoose = require('mongoose')
 const blogs = mongoose.model('blog')
 
@@ -75,7 +75,7 @@ function paramBlog (req, res, next) {
   auto({
     blog (cb) {
       blogs
-        .findOne({_id: req.params.blogId})
+        .findOne({ _id: req.params.blogId })
         .populate('user')
         .exec(cb)
     }

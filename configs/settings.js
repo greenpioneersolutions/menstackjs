@@ -1,4 +1,4 @@
-require('dotenv').config({silent: true})
+require('dotenv').config({ silent: true })
 const environment = process.env.NODE_ENV || 'development'
 const globalSettings = {
   mongodb: {
