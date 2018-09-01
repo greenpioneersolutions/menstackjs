@@ -1,67 +1,39 @@
-module.exports.buildRoutes = routes
-
-var express = require('express')
-var ejs = require('ejs')
-var path = require('path')
-var seo = require('./seo')
-var debug = require('debug')('menstackjs:routes')
-var glob = require('glob')
+module.exports = { routes }
 
 function routes (self) {
-  debug('started createBackendRoutes')
-  // Dynamic Routes / Manually enabling them . You can change it back to automatic in the settings
-  // var build = require('buildreq')()
-  // var mongoose = require('mongoose')
-  // build.routing(app, mongoose) - if reverting back to automatic
-
-  // self.app.use(self.build.responseMiddleware({mongoose: mongoose}))
-  // self.build.routing({
-  //   mongoose: mongoose,
-  //   remove: ['users'],
-  //   middleware: {
-  //     auth: [self.middleware.verify, self.middleware.isAuthenticated]
-  //   }
-  // }, function (error, data) {
-  //   if (error)  self.logger.warn(error)
-  //   _.forEach(data, function (m) {
-  //     debug('Route Built by NPM buildreq:', m.route)
-  //     self.app.use(m.route, m.app)
-  //   })
-  // })
-  var files = glob.sync('server/modules/**/*.routes.js')
-  files.forEach(function (router) {
-    debug('Route : %s', router)
-    require('../' + router)(self.app, self.middleware, self.mail, self.settings, self.models, self.logger)
-  })
-  self.app.use(express.static(path.join(self.dir, 'client/'), {
-    maxAge: self.settings.cache.maxAge
-  }))
-  self.app.get('/api/seo/*', function (req, res) {
-    seo(self, req, req.path.replace('/api/seo', ''), function (seoSettings) {
-      res.send(seoSettings)
-    })
-  })
-  self.app.get('/:url(api|images|scripts|styles|components|uploads|modules)/*', function (req, res) {
-    res.status(400).send({
+  for (let i = 0; i < self.files.routes.length; i++) {
+    require(self.files.routes[i])(self.app, self.middleware, self.mail, self.settings, self.models, self.logger)
+  }
+  self.app.get('/:url(api|modules)/*', function (req, res) {
+    res.status(404).send({
       error: 'nothing found at ' + req.path
     })
   })
-  self.app.get('/*', function (req, res, next) {
-    seo(self, req, function (seoSettings) {
-      ejs.renderFile(path.join(__dirname, './layout/index.html'), {
-        html: seoSettings,
-        googleAnalytics: self.settings.googleAnalytics,
-        name: self.settings.app.name,
-        assets: self.app.locals.frontendFilesFinal,
-        environment: self.environment,
-        user: req.user ? req.user : {}
-      }, {
-        cache: true
-      }, function (error, str) {
-        if (error) next(error)
-        res.send(str)
-      })
-    })
+  self.app.get('/', function (req, res, next) {
+    res.send(`
+            <!doctype html>
+            <html xmlns="http://www.w3.org/1999/xhtml" xmlns:fb="http://www.facebook.com/2008/fbml" xmlns:og="http://opengraphprotocol.org/schema/" lang="en">
+            <head  prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb#">
+                <base href="/">
+                <title >Men Stack JS</title>
+                <meta charset="utf-8"/>
+                <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+                <meta name="viewport" content="width=device-width,initial-scale=1"/>
+                <meta name="fragment" content="!"/>
+                <meta http-equiv="Content-type" content="text/html;charset=UTF-8"/>   
+            </head>
+            <body>    
+                <div>
+                    <h1>Men Stack API Page</h1>
+                    <p>Here are just some of the routes in the system to help you get started. </p>
+                    <a href="http://localhost:3000/api/blog">Blog API</a><br>                    
+                    <a href="http://localhost:3000/api/user">User API</a><br>                    
+                </div>
+            </body>
+            </html>
+        `)
   })
-  debug('end createBackendRoutes')
+  self.app.get('/*', function (req, res, next) {
+    res.redirect('/')
+  })
 }
