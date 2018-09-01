@@ -12,8 +12,8 @@ function createKey (user, apikey) {
 }
 
 function checkKey (token, cb) {
-  const decoded = jwt.decode(token, {complete: true})
-  let errorResponse = {message: ''}
+  const decoded = jwt.decode(token, { complete: true })
+  let errorResponse = { message: '' }
   if (!decoded) errorResponse.message = 'Nothing to decode'
   if (!decoded.payload) errorResponse.message = 'No payload to decode'
   if (!decoded.payload._id) errorResponse.message = 'No user id was found in decode'

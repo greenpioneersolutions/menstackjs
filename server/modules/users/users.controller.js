@@ -1,4 +1,4 @@
-module.exports = {postAuthenticate, getAuthenticate, logout, postSignup, putUpdateProfile, putUpdatePassword, deleteDeleteAccount, getReset, postReset, postForgot, getKey, postKey, getKeyReset, checkLoginInformation, createResponseObject}
+module.exports = { postAuthenticate, getAuthenticate, logout, postSignup, putUpdateProfile, putUpdatePassword, deleteDeleteAccount, getReset, postReset, postForgot, getKey, postKey, getKeyReset, checkLoginInformation, createResponseObject }
 
 const _ = require('lodash')
 const auto = require('run-auto')
@@ -6,7 +6,7 @@ const crypto = require('crypto')
 const passport = require('passport')
 const mail = require('../../mail.js')
 const tokenApi = require('./../../token.js')
-const {validationResult} = require('express-validator/check')
+const { validationResult } = require('express-validator/check')
 const mongoose = require('mongoose')
 const User = mongoose.model('users')
 const settings = require('../../../configs/settings.js').get()
@@ -187,7 +187,7 @@ function postReset (req, res, next) {
             return next(error)
           }
           if (!user) {
-            return res.status(400).send({message: 'no user found to reset password for. please hit reset password to get another token'})
+            return res.status(400).send({ message: 'no user found to reset password for. please hit reset password to get another token' })
           }
           user.password = req.body.password
           user.resetPasswordToken = undefined
@@ -271,20 +271,20 @@ function postForgot (req, res, next) {
 }
 
 function getKey (req, res, next) {
-  return res.json({token: tokenApi.createKey(req.user)})
+  return res.json({ token: tokenApi.createKey(req.user) })
 }
 
 function postKey (req, res, next) {
   const token = tokenApi.createKey(req.user)
   res.cookie('token', token)
-  return res.json({token})
+  return res.json({ token })
 }
 
 function getKeyReset (req, res, next) {
   req.user.apikey = crypto.randomBytes(16).toString('base64')
   req.user.save(error => {
     if (error) return res.status(500).send(error)
-    return res.json({token: tokenApi.createKey(req.user)})
+    return res.json({ token: tokenApi.createKey(req.user) })
   })
 }
 

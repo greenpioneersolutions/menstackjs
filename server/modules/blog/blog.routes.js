@@ -1,5 +1,5 @@
 const blog = require('./blog.controller.js')
-const {check} = require('express-validator/check')
+const { check } = require('express-validator/check')
 
 const blogIdChecks = [
   check('blogId').exists().withMessage('Your Blog ID cannot be blank'),

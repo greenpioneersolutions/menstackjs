@@ -1,5 +1,5 @@
 const user = require('./users.controller.js')
-const {check} = require('express-validator/check')
+const { check } = require('express-validator/check')
 
 const checkLoginInformationChecks = [
   check('email').isEmail().withMessage('Your Email is not valid'),

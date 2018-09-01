@@ -7,7 +7,7 @@ for (let index = 0; index < serverPackageJsonFiles.length; index++) {
   let fileLocation = path.resolve(serverPackageJsonFiles[index])
   let filePath = path.parse(fileLocation)
   shell.cd(`${filePath.dir}`)
-  shell.exec('npm install', {silent: false}, function () {
+  shell.exec('npm install', { silent: false }, function () {
     console.log(`Finished Installing ${serverPackageJsonFiles[index]}`)
   })
 }
