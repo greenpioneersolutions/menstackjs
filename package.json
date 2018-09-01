@@ -1,6 +1,6 @@
 {
   "name": "menstackjs",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "menstack",
   "scripts": {
     "dev": "node_modules/.bin/nodemon -w server/ --exec \"npm start\"",
