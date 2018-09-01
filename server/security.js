@@ -1,7 +1,7 @@
+module.exports = { security }
+
 const cors = require('cors')
 const helmet = require('helmet')
-
-module.exports = { security }
 
 function security (self) {
   self.app.use(helmet())

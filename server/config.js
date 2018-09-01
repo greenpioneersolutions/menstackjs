@@ -1,19 +1,19 @@
+module.exports = { config }
+
 const morgan = require('morgan')
-const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
 const compress = require('compression')
 const favicon = require('serve-favicon')
 const methodOverride = require('method-override')
 const path = require('path')
-
-module.exports = { config }
+const express = require('express')
 
 function config (self) {
   self.app.use(morgan('dev'))
-  self.app.use(bodyParser.json({
+  self.app.use(express.json({
     limit: '100kb'
   }))
-  self.app.use(bodyParser.json({
+  self.app.use(express.urlencoded({
     limit: '100kb', extended: true
   }))
   self.app.use(compress())

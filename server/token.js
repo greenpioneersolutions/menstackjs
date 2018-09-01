@@ -1,8 +1,7 @@
-const mongoose = require('mongoose')
-const jwt = require('jsonwebtoken')
-
 module.exports = { createKey, checkKey }
 
+const jwt = require('jsonwebtoken')
+const mongoose = require('mongoose')
 const User = mongoose.model('users')
 const settings = require('../configs/settings').get()
 

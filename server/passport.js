@@ -1,7 +1,6 @@
 
 const LocalStrategy = require('passport-local').Strategy
 const mongoose = require('mongoose')
-
 const User = mongoose.model('users')
 
 function serializeUser (user, done) {

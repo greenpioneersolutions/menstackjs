@@ -1,7 +1,6 @@
 const glob = require('glob')
 const path = require('path')
 const shelljs = require('shelljs')
-
 const files = glob.sync('./server/**/tests/*.js')
 var args = process.argv.slice(2)
 for (let index = 0; index < files.length; index++) {

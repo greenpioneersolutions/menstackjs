@@ -1,14 +1,13 @@
+module.exports = {postAuthenticate, getAuthenticate, logout, postSignup, putUpdateProfile, putUpdatePassword, deleteDeleteAccount, getReset, postReset, postForgot, getKey, postKey, getKeyReset, checkLoginInformation, createResponseObject}
+
 const _ = require('lodash')
 const auto = require('run-auto')
 const crypto = require('crypto')
 const passport = require('passport')
-const mongoose = require('mongoose')
 const mail = require('../../mail.js')
 const tokenApi = require('./../../token.js')
 const {validationResult} = require('express-validator/check')
-
-module.exports = {postAuthenticate, getAuthenticate, logout, postSignup, putUpdateProfile, putUpdatePassword, deleteDeleteAccount, getReset, postReset, postForgot, getKey, postKey, getKeyReset, checkLoginInformation, createResponseObject}
-
+const mongoose = require('mongoose')
 const User = mongoose.model('users')
 const settings = require('../../../configs/settings.js').get()
 

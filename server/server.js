@@ -1,3 +1,5 @@
+module.exports = Men
+
 const http = require('http')
 const https = require('https')
 const express = require('express')
@@ -6,7 +8,6 @@ const path = require('path')
 const spdy = require('spdy')
 const auto = require('run-auto')
 const run = require('../run.js')
-module.exports = Men
 
 function Men (options, done) {
   if (!done) {

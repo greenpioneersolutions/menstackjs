@@ -1,10 +1,10 @@
 module.exports = MongoExpress
 
-var express = require('express')
+const express = require('express')
 
 function MongoExpress (self, done) {
-  var mongodbUri = require('mongodb-uri').parse(self.settings.mongodb.uri)
-  var mongoexpress = {
+  const mongodbUri = require('mongodb-uri').parse(self.settings.mongodb.uri)
+  const mongoexpress = {
     mongodb: {
       server: process.env.MONGODB_SERVER || mongodbUri.hosts[0].host,
       port: process.env.MONGODB_PORT || mongodbUri.hosts[0].port || 27017,

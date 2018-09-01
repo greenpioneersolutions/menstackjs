@@ -1,6 +1,6 @@
-const auto = require('run-auto')
-
 module.exports = seed
+
+const auto = require('run-auto')
 
 function seed (self, cb) {
   if (self.settings.environment === 'production' || process.env.NODE_ENV === 'production') return cb()

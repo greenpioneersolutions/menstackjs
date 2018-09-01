@@ -1,7 +1,7 @@
+module.exports = { register }
+
 const glob = require('glob')
 const path = require('path')
-
-module.exports = { register }
 
 function register (self) {
   self.register = 'register ME'

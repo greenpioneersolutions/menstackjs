@@ -1,6 +1,6 @@
-const { logger } = require('./logger.js')
-
 module.exports = { middleware, log }
+
+const { logger } = require('./logger.js')
 
 function log (error, cb) {
   if (typeof cb !== 'function') {

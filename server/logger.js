@@ -1,9 +1,9 @@
+module.exports = { middleware }
+
 const morgan = require('morgan')
 const fs = require('fs')
 const path = require('path')
 const winston = require('winston')
-
-module.exports = { middleware }
 
 const logDir = path.resolve('./logs')
 try {

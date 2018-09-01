@@ -1,7 +1,7 @@
+module.exports = { hasRole, isAdmin, isAuthorized, isAuthenticated, checkAuthenticated }
+
 const _ = require('lodash')
 const tokenAPI = require('./token.js')
-
-module.exports = { hasRole, isAdmin, isAuthorized, isAuthenticated, checkAuthenticated }
 
 function checkAuthenticated (req, cb) {
   const token = req.headers.authorization || req.query.token || req.body.token // || req.headers['x-access-token']

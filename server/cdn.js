@@ -1,4 +1,5 @@
+module.exports = { cdn }
+
 function cdn (self) {
   self.cdn = false
 }
-module.exports = { cdn }

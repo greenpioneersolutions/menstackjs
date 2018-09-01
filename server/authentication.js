@@ -1,9 +1,9 @@
+module.exports = { authentication }
+
 const auth = require('./passport.js')
 const passport = require('passport')
 const session = require('express-session')
 const MongoStore = require('connect-mongo')(session)
-
-module.exports = { authentication }
 
 function authentication (self) {
   self.app.use(session({

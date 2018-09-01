@@ -1,9 +1,9 @@
+module.exports = { init, disconnect, connect, reconnect, readyState }
+
 const _ = require('lodash')
 const path = require('path')
 const mongoose = require('mongoose')
 const seed = require('./seed.js')
-
-module.exports = { init, disconnect, connect, reconnect, readyState }
 
 function connect (self) {
   mongoose.connect(self.settings.mongodb.uri)

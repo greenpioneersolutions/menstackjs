@@ -1,10 +1,9 @@
-const auto = require('run-auto')
-const mongoose = require('mongoose')
-const _ = require('lodash')
-const {validationResult} = require('express-validator/check')
-
 module.exports = {getBlog, deleteBlog, postBlog, putBlog, getBlogById, paramBlog}
 
+const auto = require('run-auto')
+const _ = require('lodash')
+const {validationResult} = require('express-validator/check')
+const mongoose = require('mongoose')
 const blogs = mongoose.model('blog')
 
 function getBlog (req, res, next) {

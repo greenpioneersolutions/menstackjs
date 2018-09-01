@@ -1,7 +1,7 @@
+module.exports = { send }
+
 const sendmail = require('sendmail')()
 const settings = require('../configs/settings.js').get()
-
-module.exports = { send }
 
 function send (message, cb) {
   const mailOptions = {
