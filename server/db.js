@@ -5,8 +5,10 @@ const path = require('path')
 const mongoose = require('mongoose')
 const seed = require('./seed.js')
 
+mongoose.set('useCreateIndex', true)
+
 function connect (self) {
-  mongoose.connect(self.settings.mongodb.uri)
+  mongoose.connect(self.settings.mongodb.uri, { useNewUrlParser: true })
 }
 function disconnect (cb) {
   if (!cb)cb = function () {}
