@@ -11,12 +11,12 @@ function seed (self, cb) {
     remove (callback) {
       auto({
         User (callback) {
-          User.find({}).remove().exec(() => {
+          User.find({}).deleteOne().exec(() => {
             callback(null, true)
           })
         },
         Blog (callback) {
-          Blog.find({}).remove().exec(() => {
+          Blog.find({}).deleteOne().exec(() => {
             callback(null, true)
           })
         }

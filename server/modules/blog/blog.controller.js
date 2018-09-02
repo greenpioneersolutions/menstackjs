@@ -16,7 +16,7 @@ function getBlog (req, res, next) {
     count (cb) {
       blogs
         .find()
-        .count()
+        .countDocuments()
         .exec(cb)
     }
   }, (error, results) => {
@@ -26,7 +26,7 @@ function getBlog (req, res, next) {
 }
 
 function deleteBlog (req, res, next) {
-  req.blog.remove(error => {
+  req.blog.deleteOne(error => {
     if (error) return next(error)
     res.status(204).send()
   })

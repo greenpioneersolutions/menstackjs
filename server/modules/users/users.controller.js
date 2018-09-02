@@ -131,7 +131,7 @@ function putUpdatePassword (req, res, next) {
 }
 
 function deleteDeleteAccount (req, res, next) {
-  User.remove({ _id: req.user.id }, error => {
+  User.deleteOne({ _id: req.user.id }, error => {
     if (error) {
       return next(error)
     }
