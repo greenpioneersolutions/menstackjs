@@ -93,6 +93,8 @@ npm install
 # Start up the server
 npm start
 
+# Docker
+docker-compose up
 ```
 
 **Note:** We highly recommend installing [Nodemon](https://github.com/remy/nodemon).
