@@ -6,7 +6,6 @@ const mongoose = require('mongoose')
 const seed = require('./seed.js')
 
 mongoose.set('useCreateIndex', true)
-
 function connect (self) {
   mongoose.connect(self.settings.mongodb.uri, { useNewUrlParser: true })
 }
